@@ -22,9 +22,13 @@ describe('CRUD de Tarefas - Testes Automatizados', () => {
         const resposta = await request(app).get('/tasks');
         
         expect(resposta.status).toBe(200);
-        expect(Array.isArray(resposta.body)).toBe(true);
-        expect(resposta.body.length).toBe(1);
-        expect(resposta.body[0].titulo).toBe('Estudar Testes');
+        expect(resposta.body).toHaveProperty('data');
+        expect(Array.isArray(resposta.body.data)).toBe(true);
+        expect(resposta.body.data[0].titulo).toBe('Estudar Testes');
+
+        expect(resposta.body.page).toBe(1);
+        expect(resposta.body.limit).toBe(10);
+        expect(resposta.body.total).toBe(1);
     });
 
     it('Deve atualizar o titulo da tarefa via PUT', async () => {

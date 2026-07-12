@@ -5,13 +5,27 @@ export async function createTask(titulo, descricao) {
     await db.run(query, [titulo, descricao]);
 }
 
-export async function listTasks(pesquisa = "") {
+export async function listTasks(pesquisa = "", page = 1, limit = 10) {
+    const offset = (page - 1) * limit;
+    let dados = [];
+    let total = 0;
+
     if (pesquisa) {
-        const query = `SELECT * FROM tarefas WHERE titulo LIKE ? OR descricao LIKE ?`;
         const termo = `%${pesquisa}%`;
-        return await db.all(query, [termo, termo]);
+        dados = await db.all(`SELECT * FROM tarefas WHERE titulo LIKE ? OR descricao LIKE ? LIMIT ? OFFSET ?`, [termo, termo, limit, offset]);
+        const count = await db.get(`SELECT COUNT(*) as total FROM tarefas WHERE titulo LIKE ? OR descricao LIKE ?`, [termo, termo]);
+        total = count.total;
+    } else {
+        dados = await db.all(`SELECT * FROM tarefas LIMIT ? OFFSET ?`, [limit, offset]);
+        const count = await db.get(`SELECT COUNT(*) as total FROM tarefas`);
+        total = count.total;
     }
-    return await db.all(`SELECT * FROM tarefas`);
+    return {
+        data: dados,
+        page: page,
+        limit: limit,
+        total: total
+    };
 }
 
 export async function updateTask(id, novosDados) {
