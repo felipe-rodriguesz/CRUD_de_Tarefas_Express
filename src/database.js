@@ -4,11 +4,15 @@ dotenv.config();
 import pkg from 'pg';
 const { Pool } = pkg;
 
-export const db = new Pool( {
-    connectionString: process.env.DATABASE_URL
+const url = process.env.NODE_ENV === 'test' 
+    ? process.env.TEST_DATABASE_URL 
+    : process.env.DATABASE_URL;
+
+export const db = new Pool({
+    connectionString: url
 });
 
-async function createTable(params) {
+export async function createTable() {
     await db.query(`
         CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
@@ -31,5 +35,3 @@ async function createTable(params) {
 
     console.log("Tabelas verificadas/criadas no Supabase com sucesso!");
 }
-
-createTable();

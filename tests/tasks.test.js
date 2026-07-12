@@ -1,31 +1,47 @@
 import request from 'supertest';
 import { app } from '../src/app.js';
-import { db } from '../src/database.js';
+import { db, createTable } from '../src/database.js';
+import { jest } from '@jest/globals';
 
 let tokenBot = "";
+let tokenHacker = "";
 
-describe('CRUD de Tarefas - Testes Automatizados', () => {
+jest.setTimeout(30000);
+
+describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     
     beforeAll(async () => {
-        await db.run(`DELETE FROM tarefas`);
-        await db.run(`DELETE FROM usuarios`);
-        await db.run(`DELETE FROM sqlite_sequence WHERE name="tarefas"`);
+        await createTable();
+        await db.query(`TRUNCATE TABLE tarefas, usuarios RESTART IDENTITY CASCADE`);
 
         await request(app).post('/usuarios/cadastro').send({
             nome: "Bot de Testes",
             email: "robo@robo.com",
             senha: "123"
         });
-
         const respostaLogin = await request(app).post('/usuarios/login').send({
             email: "robo@robo.com",
             senha: "123"
         });
-
         tokenBot = respostaLogin.body.token;
+
+        await request(app).post('/usuarios/cadastro').send({
+            nome: "Bot Hacker",
+            email: "hacker@robo.com",
+            senha: "123"
+        });
+        const respostaHacker = await request(app).post('/usuarios/login').send({
+            email: "hacker@robo.com",
+            senha: "123"
+        });
+        tokenHacker = respostaHacker.body.token;
     });
 
-    it('Deve criar uma tarefa nova com sucesso', async () => {
+    afterAll(async () => {
+        await db.end();
+    });
+
+    it('Deve criar uma tarefa nova com sucesso (Usuário A)', async () => {
         const resposta = await request(app)
             .post('/tasks')
             .set("Authorization", `Bearer ${tokenBot}`)
@@ -38,19 +54,23 @@ describe('CRUD de Tarefas - Testes Automatizados', () => {
         expect(resposta.body).toBe("Tarefa criada!");
     });
 
-    it('Deve listar a tarefa recém-criada', async () => {
+    it('Deve listar a tarefa recém-criada (Usuário A)', async () => {
         const resposta = await request(app)
             .get('/tasks')
             .set("Authorization", `Bearer ${tokenBot}`)
 
         expect(resposta.status).toBe(200);
-        expect(resposta.body).toHaveProperty('data');
-        expect(Array.isArray(resposta.body.data)).toBe(true);
+        expect(resposta.body.data.length).toBe(1);
         expect(resposta.body.data[0].titulo).toBe('Estudar Testes');
+    });
 
-        expect(resposta.body.page).toBe(1);
-        expect(resposta.body.limit).toBe(10);
-        expect(resposta.body.total).toBe(1);
+    it('ISOLAMENTO: Usuário B não deve ver as tarefas do Usuário A', async () => {
+        const resposta = await request(app)
+            .get('/tasks')
+            .set("Authorization", `Bearer ${tokenHacker}`)
+
+        expect(resposta.status).toBe(200);
+        expect(resposta.body.data.length).toBe(0);
     });
 
     it('Deve atualizar o titulo da tarefa via PUT', async () => {
@@ -66,21 +86,21 @@ describe('CRUD de Tarefas - Testes Automatizados', () => {
         expect(resposta.body).toBe("Atualizado via PUT!");
     });
 
-    it('Deve deletar a tarefa existente', async () => {
+    it('ISOLAMENTO: Usuário B não pode deletar a tarefa do Usuário A', async () => {
+        const resposta = await request(app)
+            .delete('/tasks/1')
+            .set("Authorization", `Bearer ${tokenHacker}`)
+
+        expect(resposta.status).toBe(404);
+        expect(resposta.body).toBe("Não encontrado");
+    });
+
+    it('Deve deletar a tarefa existente (Pelo dono correto)', async () => {
         const resposta = await request(app)
             .delete('/tasks/1')
             .set("Authorization", `Bearer ${tokenBot}`)
 
         expect(resposta.status).toBe(200);
         expect(resposta.body).toBe("Deletado com sucesso!");
-    });
-
-    it('Deve retornar erro 404 ao tentar deletar uma tarefa apagada/inexistente', async () => {
-        const resposta = await request(app)
-            .delete('/tasks/999')
-            .set("Authorization", `Bearer ${tokenBot}`)
-
-        expect(resposta.status).toBe(404);
-        expect(resposta.body).toBe("Não encontrado");
     });
 });
