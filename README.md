@@ -11,6 +11,7 @@ API REST para gerenciamento de tarefas (CRUD), evoluída de Node.js puro para o 
 - **Paginação e Busca:** Listagem de tarefas otimizada com `limit`, `page` e `search`.
 - **CRUD Completo:** Criação, Edição, Atualização de Status e Remoção de tarefas.
 - **Testes Automatizados:** Cobertura de testes End-to-End (E2E) com Jest e Supertest.
+- **Documentação Interativa:** Portal do desenvolvedor gerado com Swagger (OpenAPI) na rota `/api-docs`.
 
 ## 💻 Tecnologias
 - **Node.js & Express** (Servidor Web e Roteamento)
@@ -19,6 +20,7 @@ API REST para gerenciamento de tarefas (CRUD), evoluída de Node.js puro para o 
 - **JSON Web Token (JWT)** (Autenticação Stateless)
 - **Bcryptjs** (Criptografia de Senhas)
 - **Jest & Supertest** (Testes Automatizados E2E)
+- **Swagger / OpenAPI** (Documentação Interativa da API)
 - **Render** (Hospedagem / Deploy Contínuo)
 - **Dotenv** (Gerenciamento de Variáveis de Ambiente)
 
@@ -37,6 +39,7 @@ API REST para gerenciamento de tarefas (CRUD), evoluída de Node.js puro para o 
    npm start
    ```
 5. A API estará escutando na porta `http://localhost:3000`.
+6. Acesse a documentação oficial da API no seu navegador: `http://localhost:3000/api-docs`
 
 ## 🛣️ Rotas da API
 
@@ -61,7 +64,10 @@ Neste projeto, a aplicação evoluiu de um script simples para uma arquitetura B
 - **Segurança:** Implementação de Middlewares no Express para validar Tokens JWT, proteger rotas privadas e isolar dados (Multi-tenant) injetando o `usuario_id` nas consultas SQL.
 - **Bancos de Dados Relacionais:** Transição de SQLite local para PostgreSQL na nuvem utilizando Supabase, Connection Pooling (IPv4) e o driver nativo `pg`.
 - **Garantia de Qualidade (QA):** Criação de bancos de dados isolados para ambiente de testes (`TEST_DATABASE_URL`) e elaboração de testes E2E com Jest para testar possíveis brechas de segurança.
+- **Documentação Interativa:** Uso do `swagger-ui-express` e anotações JSDoc para gerar dinamicamente o catálogo da API (OpenAPI), permitindo testes direto no navegador.
 - **Deploy:** Hospedagem da aplicação publicamente através do Render, gerenciando variáveis de ambiente seguras (`.env`).
 
-## 🚀 Melhorias futuras (Próximo Passo)
-- [ ] Configurar documentação interativa utilizando o padrão OpenAPI (Swagger).
+## 🚀 Melhorias futuras (Ideias)
+- Adicionar validação de dados mais rigorosa com bibliotecas como Zod ou Joi.
+- Implementar fluxo de recuperação de senha por e-mail.
+- Adicionar níveis de acesso (ex: Usuário Comum e Administrador).
