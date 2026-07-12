@@ -13,7 +13,9 @@ await db.exec(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         titulo TEXT NOT NULL,
         descricao TEXT NOT NULL,
-        status TEXT DEFAULT 'PENDENTE'
+        status TEXT DEFAULT 'PENDENTE',
+        usuario_id INTEGER NOT NULL,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
     )
 `);
 

@@ -2,24 +2,24 @@ import { db } from './database.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-export async function createTask(titulo, descricao) {
-    const query = `INSERT INTO tarefas (titulo, descricao) VALUES (?, ?)`;
-    await db.run(query, [titulo, descricao]);
+export async function createTask(titulo, descricao, usuario_id) {
+    const query = `INSERT INTO tarefas (titulo, descricao, usuario_id) VALUES (?, ?, ?)`;
+    await db.run(query, [titulo, descricao, usuario_id]);
 }
 
-export async function listTasks(pesquisa = "", page = 1, limit = 10) {
+export async function listTasks(pesquisa = "", page = 1, limit = 10, usuarioId) {
     const offset = (page - 1) * limit;
     let dados = [];
     let total = 0;
 
     if (pesquisa) {
         const termo = `%${pesquisa}%`;
-        dados = await db.all(`SELECT * FROM tarefas WHERE titulo LIKE ? OR descricao LIKE ? LIMIT ? OFFSET ?`, [termo, termo, limit, offset]);
-        const count = await db.get(`SELECT COUNT(*) as total FROM tarefas WHERE titulo LIKE ? OR descricao LIKE ?`, [termo, termo]);
+        dados = await db.all(`SELECT * FROM tarefas WHERE usuario_id = ? AND (titulo LIKE ? OR descricao LIKE ?) LIMIT ? OFFSET ?`, [usuarioId, termo, termo, limit, offset]);
+        const count = await db.get(`SELECT COUNT(*) as total FROM tarefas WHERE usuario_id = ? AND (titulo LIKE ? OR descricao LIKE ?)`, [usuarioId, termo, termo]);
         total = count.total;
     } else {
-        dados = await db.all(`SELECT * FROM tarefas LIMIT ? OFFSET ?`, [limit, offset]);
-        const count = await db.get(`SELECT COUNT(*) as total FROM tarefas`);
+        dados = await db.all(`SELECT * FROM tarefas WHERE usuario_id = ? LIMIT ? OFFSET ?`, [usuarioId, limit, offset]);
+        const count = await db.get(`SELECT COUNT(*) as total FROM tarefas WHERE usuario_id = ?`, [usuarioId]);
         total = count.total;
     }
     return {
@@ -30,21 +30,21 @@ export async function listTasks(pesquisa = "", page = 1, limit = 10) {
     };
 }
 
-export async function updateTask(id, novosDados) {
-    const tarefa = await db.get(`SELECT * FROM tarefas WHERE id = ?`, [id]);
+export async function updateTask(id, novosDados, usuarioId) {
+    const tarefa = await db.get(`SELECT * FROM tarefas WHERE id = ? AND usuario_id = ?`, [id, usuarioId]);
     if (!tarefa) return false;
 
     if (novosDados.status) {
-        await db.run(`UPDATE tarefas SET status = ? WHERE id = ?`, [novosDados.status, id]);
+        await db.run(`UPDATE tarefas SET status = ? WHERE id = ? AND usuario_id = ?`, [novosDados.status, id, usuarioId]);
         return true;
     }
     
-    await db.run(`UPDATE tarefas SET titulo = ?, descricao = ? WHERE id = ?`, [novosDados.titulo || tarefa.titulo, novosDados.descricao || tarefa.descricao, id]);
+    await db.run(`UPDATE tarefas SET titulo = ?, descricao = ? WHERE id = ? AND usuario_id = ?`, [novosDados.titulo || tarefa.titulo, novosDados.descricao || tarefa.descricao, id, usuarioId]);
     return true;
 }
 
-export async function deleteTask(id) {
-    const result = await db.run(`DELETE FROM tarefas WHERE id = ?`, [id]);
+export async function deleteTask(id, usuarioId) {
+    const result = await db.run(`DELETE FROM tarefas WHERE id = ? AND usuario_id = ?`, [id, usuarioId]);
     
     if (result.changes === 0) return false;
     
