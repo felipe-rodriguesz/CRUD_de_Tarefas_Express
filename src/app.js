@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { rotas } from "./routes.js";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
@@ -33,6 +34,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 const app = express();
+app.use(cors()); // Permite que qualquer Frontend converse com a API
 app.use(express.json());
 
 // Rota da Documentação Oficial
