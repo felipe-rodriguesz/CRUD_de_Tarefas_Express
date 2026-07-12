@@ -1,4 +1,6 @@
 import { db } from './database.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 export async function createTask(titulo, descricao) {
     const query = `INSERT INTO tarefas (titulo, descricao) VALUES (?, ?)`;
@@ -47,4 +49,34 @@ export async function deleteTask(id) {
     if (result.changes === 0) return false;
     
     return true;
+}
+
+export async function createUser(nome, email, senha) {
+    try {
+        const senhaCriptografada = await bcrypt.hash(senha, 10);
+
+        await db.run(`INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)`, [nome, email, senhaCriptografada]);
+        return { sucesso: true};
+    } catch (error) {
+        if(error.code === 'SQLITE_CONSTRAINT'){
+            return { sucesso: false, message: 'Email já cadastrado!'};
+        }
+        return { sucesso: false, message: "Erro interno no servidor"};
+    }
+}
+
+export async function login(email, senha){
+    const usuario = await db.get(`SELECT * FROM usuarios WHERE email = ?`, [email]);
+    if(!usuario) return { sucesso: false, message: "Usuario não encontrado"};
+
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+    if (!senhaValida) {
+        return { sucesso: false, mensagem: "Senha incorreta." };
+    }
+    const token = jwt.sign(
+        { id: usuario.id, nome: usuario.nome }, 
+        "minha_chave_super_secreta",
+        { expiresIn: "1h" }
+    );
+    return { sucesso: true, token: token };
 }

@@ -16,3 +16,12 @@ await db.exec(`
         status TEXT DEFAULT 'PENDENTE'
     )
 `);
+
+await db.exec(`
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        senha TEXT NOT NULL
+    )
+`);

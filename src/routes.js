@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { createTask, listTasks, updateTask, deleteTask } from './funcoes.js';
+import { createTask, listTasks, updateTask, deleteTask, createUser, login } from './funcoes.js';
+import { verificarToken } from './middleware.js';
 
 export const rotas = Router();
+rotas.use('/tasks', verificarToken);
 
 rotas.post('/tasks', async(req, res) => {
     const { titulo, descricao } = req.body;
@@ -40,4 +42,40 @@ rotas.patch('/tasks/:id/complete', async(req, res) => {
     
     if (sucesso) return res.status(200).json("Concluído via PATCH!");
     return res.status(404).json("Não encontrado");
+});
+
+// ==========================================
+// ROTAS DE AUTENTICAÇÃO (Públicas)
+// ==========================================
+
+rotas.post('/usuarios/cadastro', async (req, res) => {
+    const { nome, email, senha } = req.body;
+    
+    if (!nome || !email || !senha) {
+        return res.status(400).json({ sucesso: false, mensagem: "Preencha nome, email e senha." });
+    }
+
+    const resultado = await createUser(nome, email, senha);
+    
+    if (resultado.sucesso) {
+        return res.status(201).json(resultado);
+    } else {
+        return res.status(400).json(resultado);
+    }
+});
+
+rotas.post('/usuarios/login', async (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({ sucesso: false, mensagem: "Preencha email e senha." });
+    }
+
+    const resultado = await login(email, senha);
+
+    if (resultado.sucesso) {
+        return res.status(200).json(resultado); 
+    } else {
+        return res.status(401).json(resultado);
+    }
 });
