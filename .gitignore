@@ -1,1 +1,6 @@
 node_modules/
+*.sqlite
+*.json
+!package.json
+!package-lock.json
+!insomnia.json
