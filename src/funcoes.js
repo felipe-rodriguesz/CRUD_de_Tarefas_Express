@@ -1,44 +1,36 @@
-import { db, salvarBanco } from './database.js';
+import { db } from './database.js';
 
-export function createTask(titulo, descricao) {
-    const novaTarefa = {
-        id: db.proxId,
-        titulo,
-        descricao,
-        status: "Pendente..."
-    };
-    db.tarefas.push(novaTarefa);
-    db.proxId++;
-    salvarBanco();
-    return novaTarefa;
+export async function createTask(titulo, descricao) {
+    const query = `INSERT INTO tarefas (titulo, descricao) VALUES (?, ?)`;
+    await db.run(query, [titulo, descricao]);
 }
 
-export function listTasks() {
-    if (db.tarefas.length === 0) {
-        console.log("Nenhuma tarefa cadastrada!");
-        return;
+export async function listTasks(pesquisa = "") {
+    if (pesquisa) {
+        const query = `SELECT * FROM tarefas WHERE titulo LIKE ? OR descricao LIKE ?`;
+        const termo = `%${pesquisa}%`;
+        return await db.all(query, [termo, termo]);
     }
-    console.log(db.tarefas);
+    return await db.all(`SELECT * FROM tarefas`);
 }
 
-export function updateTask(id, novosDados) {
-    const index = db.tarefas.findIndex(tarefa => tarefa.id === id);
-    if (index === -1) {
-        console.log("Tarefa não encontrada");
-        return false;
+export async function updateTask(id, novosDados) {
+    const tarefa = await db.get(`SELECT * FROM tarefas WHERE id = ?`, [id]);
+    if (!tarefa) return false;
+
+    if (novosDados.status) {
+        await db.run(`UPDATE tarefas SET status = ? WHERE id = ?`, [novosDados.status, id]);
+        return true;
     }
-    db.tarefas[index] = { ...db.tarefas[index], ...novosDados };
-    salvarBanco();
+    
+    await db.run(`UPDATE tarefas SET titulo = ?, descricao = ? WHERE id = ?`, [novosDados.titulo || tarefa.titulo, novosDados.descricao || tarefa.descricao, id]);
     return true;
 }
 
-export function deleteTask(id) {
-    const index = db.tarefas.findIndex(tarefa => tarefa.id === id);
-    if (index === -1) {
-        console.log("Tarefa não encontrada");
-        return false;
-    }
-    db.tarefas.splice(index, 1);
-    salvarBanco();
+export async function deleteTask(id) {
+    const result = await db.run(`DELETE FROM tarefas WHERE id = ?`, [id]);
+    
+    if (result.changes === 0) return false;
+    
     return true;
 }

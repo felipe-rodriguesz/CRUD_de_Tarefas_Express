@@ -1,47 +1,40 @@
 import { Router } from 'express';
-import { db } from './database.js';
-import { createTask, updateTask, deleteTask } from './funcoes.js';
+import { createTask, listTasks, updateTask, deleteTask } from './funcoes.js';
 
 export const rotas = Router();
 
-rotas.post('/tasks', (req, res) => {
+rotas.post('/tasks', async(req, res) => {
     const { titulo, descricao } = req.body;
-    createTask(titulo, descricao);
+    await createTask(titulo, descricao);
     return res.status(201).json("Tarefa criada!");
 });
  
-rotas.get('/tasks', (req, res) => {
+rotas.get('/tasks', async(req, res) => {
     const pesquisa = req.query.search;
-    let tarefasFiltradas = db.tarefas;
+    const tarefas = await listTasks(pesquisa);
             
-    if (pesquisa) {
-        tarefasFiltradas = db.tarefas.filter(tarefa => {
-            return tarefa.titulo.toLowerCase().includes(pesquisa.toLowerCase()) || 
-                   tarefa.descricao.toLowerCase().includes(pesquisa.toLowerCase());
-        });
-    }
-    return res.status(200).json(tarefasFiltradas);
+    return res.status(200).json(tarefas);
 });
 
-rotas.delete('/tasks/:id', (req, res) => {
+rotas.delete('/tasks/:id', async(req, res) => {
     const id = Number(req.params.id);
-    const sucesso = deleteTask(id);
+    const sucesso = await deleteTask(id);
         
     if (sucesso) return res.status(200).json("Deletado com sucesso!");
     return res.status(404).json("Não encontrado");
 });
 
-rotas.put('/tasks/:id', (req, res) => {
+rotas.put('/tasks/:id', async(req, res) => {
     const id = Number(req.params.id);
-    const sucesso = updateTask(id, req.body);
+    const sucesso = await updateTask(id, req.body);
     
     if (sucesso) return res.status(200).json("Atualizado via PUT!");
     return res.status(404).json("Não encontrado");
 });
 
-rotas.patch('/tasks/:id/complete', (req, res) => {
+rotas.patch('/tasks/:id/complete', async(req, res) => {
     const id = Number(req.params.id);
-    const sucesso = updateTask(id, { status: "CONCLUÍDO!" });
+    const sucesso = await updateTask(id, { status: "CONCLUÍDO!" });
     
     if (sucesso) return res.status(200).json("Concluído via PATCH!");
     return res.status(404).json("Não encontrado");

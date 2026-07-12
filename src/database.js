@@ -1,23 +1,18 @@
-import fs from 'node:fs/promises';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 
-const dbPath = process.env.NODE_ENV === 'test' ? 'db.test.json' : 'db.json';
+const dbPath = process.env.NODE_ENV === 'test' ? 'database.test.sqlite' : 'database.sqlite';
 
-export const db = {
-    tarefas: [],
-    proxId: 1
-};
+export const db = await open( {
+    filename: dbPath,
+    driver: sqlite3.Database
+});
 
-try {
-    const dadosFisicos = await fs.readFile(dbPath, 'utf8');
-    const dadosParseados = JSON.parse(dadosFisicos);
-
-    db.tarefas = dadosParseados.tarefas;
-    db.proxId = dadosParseados.proxId;
-} catch (error) {
-    
-}
-
-export async function salvarBanco() {
-    const textoJSON = JSON.stringify(db);
-    await fs.writeFile(dbPath, textoJSON)
-}
+await db.exec(`
+    CREATE TABLE IF NOT EXISTS tarefas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        descricao TEXT NOT NULL,
+        status TEXT DEFAULT 'PENDENTE'
+    )
+`);

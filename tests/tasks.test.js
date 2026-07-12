@@ -4,9 +4,9 @@ import { db } from '../src/database.js';
 
 describe('CRUD de Tarefas - Testes Automatizados', () => {
     
-    beforeAll(() => {
-        db.tarefas = [];
-        db.proxId = 1;
+    beforeAll(async () => {
+        await db.run(`DELETE FROM tarefas`);
+        await db.run(`DELETE FROM sqlite_sequence WHERE name="tarefas"`);
     });
 
     it('Deve criar uma tarefa nova com sucesso', async () => {
