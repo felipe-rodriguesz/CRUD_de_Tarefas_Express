@@ -1,75 +1,67 @@
-# 🚀 Tasks CRUD API - Node.js
+# 🚀 Tasks CRUD API - Node.js & Express
 
 ![Demonstração da API](./print.png)
 
 ## 📌 Sobre o projeto
-API REST para gerenciamento de tarefas, desenvolvida utilizando **Node.js puro** (sem frameworks como Express) com o objetivo de praticar os fundamentos do desenvolvimento backend.
+API REST para gerenciamento de tarefas (CRUD), evoluída de Node.js puro para o ecossistema robusto do **Express**. Esta aplicação possui arquitetura **Multi-tenant** (onde cada usuário gerencia apenas as próprias tarefas), autenticação segura, testes E2E e está hospedada na nuvem.
 
 ## ⚙️ Funcionalidades
-- Criar tarefas
-- Listar tarefas
-- Filtrar tarefas por título e descrição
-- Atualizar tarefas por completo
-- Remover tarefas
-- Marcar tarefas como concluídas
+- **Autenticação:** Cadastro e Login com Senhas Criptografadas (Bcrypt) e emissão de Crachás Virtuais (JWT).
+- **Multi-tenant:** Isolamento completo de dados por usuário.
+- **Paginação e Busca:** Listagem de tarefas otimizada com `limit`, `page` e `search`.
+- **CRUD Completo:** Criação, Edição, Atualização de Status e Remoção de tarefas.
+- **Testes Automatizados:** Cobertura de testes End-to-End (E2E) com Jest e Supertest.
 
 ## 💻 Tecnologias
-- Node.js
-- JavaScript
-- HTTP (Módulo Nativo)
-- JSON e File System
-- Insomnia
-- Git/GitHub
+- **Node.js & Express** (Servidor Web e Roteamento)
+- **PostgreSQL / Supabase** (Banco de Dados Relacional em Nuvem)
+- **pg & pg-pool** (Driver e Gerenciamento de Conexões)
+- **JSON Web Token (JWT)** (Autenticação Stateless)
+- **Bcryptjs** (Criptografia de Senhas)
+- **Jest & Supertest** (Testes Automatizados E2E)
+- **Render** (Hospedagem / Deploy Contínuo)
+- **Dotenv** (Gerenciamento de Variáveis de Ambiente)
 
-## 🚀 Como executar
+## 🚀 Como executar localmente
 1. Clone este repositório:
    ```bash
-   git clone [https://github.com/felipe-rodriguesz/nodejs-tasks-api.git]
+   git clone https://github.com/felipe-rodriguesz/CRUD_de_Tarefas_Express.git
    ```
-2. Instale as dependências (O projeto é construído apenas com a biblioteca padrão do Node.js, não sendo necessário `npm install`).
-3. Inicie o servidor:
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+3. Crie um arquivo `.env` na raiz do projeto e configure a variável `DATABASE_URL` com a sua string de conexão do Supabase/Postgres.
+4. Inicie o servidor:
    ```bash
    npm start
    ```
-4. A API estará escutando na porta `http://localhost:3000`.
-
-*(Dica: Você pode importar o arquivo `insomnia.json` presente neste repositório diretamente no seu aplicativo Insomnia para ter todas as requisições configuradas!)*
+5. A API estará escutando na porta `http://localhost:3000`.
 
 ## 🛣️ Rotas da API
 
-| Método | Rota | Descrição | Exemplo de Body |
-|---|---|---|---|
-| `POST` | `/tasks` | Cria uma nova tarefa | `{"titulo": "Node", "descricao": "Estudar"}` |
-| `GET` | `/tasks` | Lista as tarefas (Aceita `?search=`) | *Nenhum* |
-| `PUT` | `/tasks/:id` | Atualiza o título e descrição | `{"titulo": "Novo", "descricao": "Novo"}` |
-| `PATCH`| `/tasks/:id/complete` | Marca a tarefa como concluída | *Nenhum* |
-| `DELETE`| `/tasks/:id` | Exclui a tarefa do banco | *Nenhum* |
+### Usuários
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/usuarios/cadastro` | Cria um novo usuário |
+| `POST` | `/usuarios/login` | Autentica e retorna o Token JWT |
 
-## 💡 Exemplos de uso (JSON)
-
-**Criando uma Tarefa (`POST /tasks`)**
-```json
-{
-  "titulo": "Estudar Node.js",
-  "descricao": "Revisar os conceitos de File System e HTTP"
-}
-```
-
-**Filtrando Tarefas (`GET /tasks?search=Node`)**
-A API vasculha o banco e retorna apenas as tarefas que possuam a palavra "Node" no título ou na descrição (ignorando letras maiúsculas ou minúsculas).
+### Tarefas (Necessário Header: `Authorization: Bearer <token>`)
+| Método | Rota | Descrição |
+|---|---|---|
+| `POST` | `/tasks` | Cria uma nova tarefa vinculada ao usuário logado |
+| `GET`  | `/tasks` | Lista tarefas (Aceita Query Params: `?search=`, `?page=`, `?limit=`) |
+| `PUT`  | `/tasks/:id` | Atualiza o título e/ou descrição de uma tarefa sua |
+| `PATCH`| `/tasks/:id/complete` | Altera o status da tarefa para concluída |
+| `DELETE`|`/tasks/:id` | Exclui a tarefa do banco de dados |
 
 ## 🧠 O que aprendi
-Desenvolver uma API sem frameworks me forçou a entender como a internet realmente funciona "por debaixo dos panos". Neste projeto eu apliquei e consolidei os seguintes conhecimentos:
-- **Construção de API REST:** Entendimento profundo de Status Codes, Request/Response e verbos HTTP.
-- **Organização de backend:** Refatoração de um script único para uma arquitetura modular com separação de responsabilidades (Rotas, Middlewares, Controladores e Utils).
-- **Manipulação de requisições HTTP:** Uso de Streams e Buffers de forma assíncrona para lidar com a chegada do Body em requisições POST e PUT.
-- **Persistência simples:** Criação de um banco de dados local através de leitura e escrita de arquivos físicos usando o módulo nativo `fs/promises`.
-- **Tratamento de erros:** Validação de fluxos incorretos (ex: deletar IDs inexistentes, acessar rotas não cadastradas) retornando a sinalização `404 Not Found` ao cliente.
-- **Documentação técnica:** Criação de documentação (README) focada no usuário e exportação de Collection de testes (Insomnia).
+Neste projeto, a aplicação evoluiu de um script simples para uma arquitetura Backend de mercado. Os principais aprendizados foram:
+- **Padrão MVC e Clean Architecture:** Separação estrita entre Rotas (Controllers) e Funções de Banco de Dados.
+- **Segurança:** Implementação de Middlewares no Express para validar Tokens JWT, proteger rotas privadas e isolar dados (Multi-tenant) injetando o `usuario_id` nas consultas SQL.
+- **Bancos de Dados Relacionais:** Transição de SQLite local para PostgreSQL na nuvem utilizando Supabase, Connection Pooling (IPv4) e o driver nativo `pg`.
+- **Garantia de Qualidade (QA):** Criação de bancos de dados isolados para ambiente de testes (`TEST_DATABASE_URL`) e elaboração de testes E2E com Jest para testar possíveis brechas de segurança.
+- **Deploy:** Hospedagem da aplicação publicamente através do Render, gerenciando variáveis de ambiente seguras (`.env`).
 
-## 🚀 Melhorias futuras
-- Substituir o arquivo de texto (JSON) por um Banco de Dados Relacional real (PostgreSQL).
-- Implementar fluxo de autenticação e rotas privadas usando JWT (JSON Web Token).
-- Escrever testes automatizados (Unitários e de Ponta a Ponta) utilizando Vitest ou Jest.
-- Configurar documentação interativa utilizando o padrão OpenAPI (Swagger).
-- Fazer o Deploy da API na nuvem utilizando serviços como o Render.
+## 🚀 Melhorias futuras (Próximo Passo)
+- [ ] Configurar documentação interativa utilizando o padrão OpenAPI (Swagger).
