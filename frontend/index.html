@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <!-- A tag meta viewport garante que a página se adapte a telas de celulares -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <!-- Conectando nosso arquivo de pintura (CSS) ao esqueleto (HTML) -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ========================================== -->
+    <!-- CABEÇALHO PRINCIPAL DA PÁGINA              -->
+    <!-- ========================================== -->
+    <header>
+        <h1>Gerenciador de Tarefas</h1>
+        <p>Seu sistema completo para organização pessoal.</p>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- ÁREA DE AUTENTICAÇÃO (LOGIN / CADASTRO)    -->
+    <!-- ========================================== -->
+    <section id="auth-section">
+        <h2>Entrar no Sistema</h2>
+        
+        <!-- Formulário de Login -->
+        <form id="form-login">
+            <h3>Já tenho conta</h3>
+            <input type="email" id="login-email" placeholder="Seu e-mail" required>
+            <input type="password" id="login-senha" placeholder="Sua senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <br>
+
+        <!-- Formulário de Cadastro -->
+        <form id="form-cadastro">
+            <h3>Criar nova conta</h3>
+            <input type="text" id="cadastro-nome" placeholder="Seu nome" required>
+            <input type="email" id="cadastro-email" placeholder="Seu e-mail" required>
+            <input type="password" id="cadastro-senha" placeholder="Sua senha" required>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </section>
+
+    <hr>
+
+    <!-- ========================================== -->
+    <!-- ÁREA DE TAREFAS (Invisível até o login)    -->
+    <!-- ========================================== -->
+    <section id="tasks-section">
+        <h2>Minhas Tarefas</h2>
+
+        <!-- Formulário para CRIAR uma nova tarefa -->
+        <form id="form-tarefa">
+            <input type="text" id="tarefa-titulo" placeholder="Título da tarefa" required>
+            <textarea id="tarefa-descricao" placeholder="Descrição da tarefa" required></textarea>
+            <button type="submit">Adicionar Tarefa</button>
+        </form>
+
+        <br>
+
+        <!-- Barra de PESQUISA -->
+        <div>
+            <input type="text" id="input-pesquisa" placeholder="Buscar tarefa...">
+            <button id="btn-pesquisar">Buscar</button>
+        </div>
+
+        <br>
+
+        <!-- LISTA onde as tarefas vão aparecer -->
+        <ul id="lista-tarefas">
+            
+            <!-- Tarefa "Dummy" (Falsa) 1 -->
+            <li>
+                <input type="checkbox">
+                <span><strong>Estudar Node.js</strong> - Revisar as aulas de API REST</span>
+                <button>Editar</button>
+                <button>Excluir</button>
+            </li>
+
+            <!-- Tarefa "Dummy" (Falsa) 2 -->
+            <li class="concluida">
+                <input type="checkbox" checked>
+                <span><strong>Finalizar Backend</strong> - CRUD e BD na nuvem concluídos</span>
+                <button>Editar</button>
+                <button>Excluir</button>
+            </li>
+
+        </ul>
+    </section>
+
+</body>
+</html>

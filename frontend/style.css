@@ -1,0 +1,149 @@
+/* ========================================== */
+/* 1. CSS RESET & TIPOGRAFIA                  */
+/* ========================================== */
+
+/* O asterisco (*) significa "aplique isso em TODAS as tags do site" */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ========================================== */
+/* 2. LAYOUT PRINCIPAL (O CONTAINER)          */
+/* ========================================== */
+
+/* Estilizando o corpo inteiro da página */
+body {
+    background-color: #f4f7f6; /* Um cinza bem claro, moderno */
+    color: #333; /* Texto cinza escuro, mais suave que o preto puro */
+    max-width: 600px; /* Impede que o site estique mais do que 600 pixels */
+    margin: 40px auto; /* 40px em cima/baixo e AUTO nas laterais para centralizar na tela */
+    padding: 20px;
+}
+
+/* O Cabeçalho */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header p {
+    color: #666; /* Subtítulo um pouco mais claro */
+    margin-top: 5px;
+}
+
+/* Transformando nossas <section> em "Cartões Brancos" flutuantes */
+section {
+    background-color: #ffffff; /* Fundo branco */
+    padding: 25px; /* Espaço interno para o texto não grudar na borda */
+    border-radius: 12px; /* Arredonda as pontas do cartão */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05); /* Sombra super sutil, efeito 3D */
+    margin-bottom: 25px; /* Empurra os elementos que estiverem abaixo */
+}
+
+/* Estilizando os títulos (Entrar no Sistema, Minhas Tarefas) */
+section h2 {
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #eee; /* Linha divisória charmosa embaixo do título */
+    padding-bottom: 10px;
+}
+
+/* ========================================== */
+/* 3. FORMULÁRIOS (INPUTS E BOTÕES)           */
+/* ========================================== */
+
+/* Estilizando as caixas de texto */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    width: 100%; /* Faz a caixa ocupar 100% da largura do cartão */
+    padding: 12px;
+    margin-bottom: 15px; /* Empurra o elemento de baixo para longe */
+    border: 1px solid #ccc; /* Borda cinza clara */
+    border-radius: 6px; /* Borda arredondada */
+    font-size: 1rem;
+    outline: none; /* Tira aquela borda preta feia padrão ao clicar */
+}
+
+/* Quando o usuário clica na caixa para digitar (Focus) */
+input:focus, textarea:focus {
+    border-color: #007bff; /* Borda fica azul */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Brilho azul em volta */
+}
+
+/* Área de descrição pode ser aumentada pelo usuário */
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Estilizando os Botões */
+button {
+    background-color: #007bff; /* Azul clássico */
+    color: white; /* Texto branco */
+    border: none; /* Remove a borda padrão */
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer; /* Transforma o mouse em uma "mãozinha" */
+    font-size: 1rem;
+    font-weight: bold;
+    width: 100%; /* Faz o botão esticar tudo */
+    transition: background-color 0.3s; /* Efeito de transição suave */
+}
+
+/* O estado HOVER: quando o mouse passa em cima do botão */
+button:hover {
+    background-color: #0056b3; /* Fica um azul mais escuro */
+}
+
+/* Botões de Ação na Lista (Menores) */
+li button {
+    width: auto;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    background-color: #dc3545; /* Vermelho para exclusão */
+    margin-left: 5px;
+}
+
+li button:first-of-type {
+    background-color: #ffc107; /* Amarelo para edição */
+    color: #000;
+}
+
+/* ========================================== */
+/* 4. LISTA DE TAREFAS E FLEXBOX              */
+/* ========================================== */
+
+/* A Lista Ul (Caixa Mãe) */
+ul {
+    list-style-type: none; /* Remove aquelas bolinhas pretas feias */
+}
+
+/* Cada Tarefa (Li) */
+li {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    
+    /* A MAGIA DO FLEXBOX AQUI */
+    display: flex;
+    align-items: center; /* Centraliza tudo verticalmente no meio da linha */
+}
+
+/* O texto da tarefa deve ocupar todo o espaço que sobrar */
+li span {
+    flex-grow: 1; /* Empurra os botões lá para o canto direito */
+    margin-left: 10px; /* Desgruda do checkbox */
+}
+
+/* Tarefa concluída (checkbox marcado) */
+li.concluida span {
+    text-decoration: line-through;
+    color: #999;
+}
