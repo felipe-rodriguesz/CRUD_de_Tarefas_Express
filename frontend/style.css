@@ -1,186 +1,481 @@
-/* ========================================== */
-/* 1. CSS RESET & TIPOGRAFIA                  */
-/* ========================================== */
+/* ==========================================
+   GOOGLE FONTS
+   ========================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* O asterisco (*) significa "aplique isso em TODAS as tags do site" */
+/* ==========================================
+   VARIÁVEIS DE TEMA (Light & Dark Mode)
+   ========================================== */
+:root {
+    --bg-body:       #f0f4ff;
+    --bg-card:       #ffffff;
+    --bg-input:      #f8fafc;
+    --bg-hover:      #f1f5f9;
+    --text-primary:  #1e293b;
+    --text-secondary:#64748b;
+    --text-muted:    #94a3b8;
+    --border:        #e2e8f0;
+    --border-focus:  #6366f1;
+    --primary:       #6366f1;
+    --primary-hover: #4f46e5;
+    --primary-light: rgba(99, 102, 241, 0.12);
+    --danger:        #ef4444;
+    --danger-hover:  #dc2626;
+    --warning:       #f59e0b;
+    --warning-hover: #d97706;
+    --shadow-sm:     0 1px 3px rgba(0, 0, 0, 0.07);
+    --shadow:        0 4px 20px rgba(99, 102, 241, 0.1);
+    --radius:        14px;
+    --radius-sm:     9px;
+    --radius-xs:     6px;
+    --transition:    0.25s ease;
+}
+
+body.dark {
+    --bg-body:       #0f172a;
+    --bg-card:       #1e293b;
+    --bg-input:      #0f172a;
+    --bg-hover:      #273549;
+    --text-primary:  #f1f5f9;
+    --text-secondary:#94a3b8;
+    --text-muted:    #475569;
+    --border:        #334155;
+    --border-focus:  #818cf8;
+    --primary:       #818cf8;
+    --primary-hover: #6366f1;
+    --primary-light: rgba(129, 140, 248, 0.15);
+    --shadow:        0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================
+   RESET E BASE
+   ========================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-/* ========================================== */
-/* 2. LAYOUT PRINCIPAL (O CONTAINER)          */
-/* ========================================== */
-
-/* Estilizando o corpo inteiro da página */
 body {
-    background-color: #f4f7f6; /* Um cinza bem claro, moderno */
-    color: #333; /* Texto cinza escuro, mais suave que o preto puro */
-    max-width: 600px; /* Impede que o site estique mais do que 600 pixels */
-    margin: 40px auto; /* 40px em cima/baixo e AUTO nas laterais para centralizar na tela */
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    max-width: 640px;
+    margin: 40px auto;
     padding: 20px;
+    transition: background-color var(--transition), color var(--transition);
 }
 
-/* O Cabeçalho */
+/* ==========================================
+   CABEÇALHO COM GRADIENTE
+   ========================================== */
 header {
-    text-align: center;
-    margin-bottom: 30px;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 60%, #a78bfa 100%);
+    color: white;
+    padding: 28px 30px;
+    border-radius: var(--radius);
+    margin-bottom: 22px;
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Círculos decorativos no fundo do header */
+header::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 200px; height: 200px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 50%;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: -70px; right: 70px;
+    width: 130px; height: 130px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+header h1 {
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 header p {
-    color: #666; /* Subtítulo um pouco mais claro */
+    color: rgba(255, 255, 255, 0.78);
     margin-top: 5px;
+    font-size: 0.88rem;
 }
 
-/* Transformando nossas <section> em "Cartões Brancos" flutuantes */
+/* Botão de alternar tema no header */
+.btn-theme {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.btn-theme:hover {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.45);
+    transform: translateY(-1px);
+    box-shadow: none;
+}
+
+/* ==========================================
+   SEÇÕES (CARTÕES)
+   ========================================== */
 section {
-    background-color: #ffffff; /* Fundo branco */
-    padding: 25px; /* Espaço interno para o texto não grudar na borda */
-    border-radius: 12px; /* Arredonda as pontas do cartão */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05); /* Sombra super sutil, efeito 3D */
-    margin-bottom: 25px; /* Empurra os elementos que estiverem abaixo */
-}
-
-/* Estilizando os títulos (Entrar no Sistema, Minhas Tarefas) */
-section h2 {
+    background-color: var(--bg-card);
+    padding: 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
     margin-bottom: 20px;
-    font-size: 1.4rem;
-    border-bottom: 2px solid #eee; /* Linha divisória charmosa embaixo do título */
-    padding-bottom: 10px;
+    border: 1.5px solid var(--border);
+    transition: background-color var(--transition), border-color var(--transition);
 }
 
-/* ========================================== */
-/* 3. FORMULÁRIOS (INPUTS E BOTÕES)           */
-/* ========================================== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 14px;
+}
 
-/* Estilizando as caixas de texto */
+section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+section h3 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+}
+
+hr {
+    border: none;
+    border-top: 1.5px solid var(--border);
+    margin: 20px 0;
+}
+
+/* ==========================================
+   INPUTS E TEXTAREA
+   ========================================== */
 input[type="text"],
 input[type="email"],
 input[type="password"],
 textarea {
-    width: 100%; /* Faz a caixa ocupar 100% da largura do cartão */
-    padding: 12px;
-    margin-bottom: 15px; /* Empurra o elemento de baixo para longe */
-    border: 1px solid #ccc; /* Borda cinza clara */
-    border-radius: 6px; /* Borda arredondada */
-    font-size: 1rem;
-    outline: none; /* Tira aquela borda preta feia padrão ao clicar */
+    width: 100%;
+    padding: 11px 14px;
+    margin-bottom: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.94rem;
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
 }
 
-/* Quando o usuário clica na caixa para digitar (Focus) */
+input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+}
+
 input:focus, textarea:focus {
-    border-color: #007bff; /* Borda fica azul */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* Brilho azul em volta */
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--primary-light);
 }
 
-/* Área de descrição pode ser aumentada pelo usuário */
 textarea {
     resize: vertical;
     min-height: 80px;
 }
 
-/* Estilizando os Botões */
+/* ==========================================
+   BOTÕES
+   ========================================== */
 button {
-    background-color: #007bff; /* Azul clássico */
-    color: white; /* Texto branco */
-    border: none; /* Remove a borda padrão */
-    padding: 12px 20px;
-    border-radius: 6px;
-    cursor: pointer; /* Transforma o mouse em uma "mãozinha" */
-    font-size: 1rem;
-    font-weight: bold;
-    width: 100%; /* Faz o botão esticar tudo */
-    transition: background-color 0.3s; /* Efeito de transição suave */
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.94rem;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
 }
 
-/* O estado HOVER: quando o mouse passa em cima do botão */
 button:hover {
-    background-color: #0056b3; /* Fica um azul mais escuro */
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
 }
 
-/* Botões de Ação na Lista (Menores) */
+button:active {
+    transform: translateY(0);
+}
+
+/* Botão de Sair */
+#btn-sair {
+    background-color: var(--danger);
+    width: auto;
+    padding: 8px 14px;
+    font-size: 0.83rem;
+}
+
+#btn-sair:hover {
+    background-color: var(--danger-hover);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Botões de ação dentro dos itens da lista */
 li button {
     width: auto;
     padding: 6px 10px;
-    font-size: 0.85rem;
-    background-color: #dc3545; /* Vermelho para exclusão */
+    font-size: 0.8rem;
     margin-left: 5px;
+    border-radius: var(--radius-xs);
+    background-color: var(--danger);
+}
+
+li button:hover {
+    background-color: var(--danger-hover);
+    box-shadow: 0 3px 8px rgba(239, 68, 68, 0.35);
 }
 
 li button:first-of-type {
-    background-color: #ffc107; /* Amarelo para edição */
-    color: #000;
+    background-color: var(--warning);
+    color: #1e293b;
 }
 
-/* ========================================== */
-/* 4. LISTA DE TAREFAS E FLEXBOX              */
-/* ========================================== */
-
-/* A Lista Ul (Caixa Mãe) */
-ul {
-    list-style-type: none; /* Remove aquelas bolinhas pretas feias */
+li button:first-of-type:hover {
+    background-color: var(--warning-hover);
+    box-shadow: 0 3px 8px rgba(245, 158, 11, 0.35);
 }
 
-/* Cada Tarefa (Li) */
-li {
-    background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    
-    /* A MAGIA DO FLEXBOX AQUI */
-    display: flex;
-    align-items: center; /* Centraliza tudo verticalmente no meio da linha */
+/* Botão de pesquisa */
+#btn-pesquisar {
+    width: auto;
+    margin-left: 10px;
+    padding: 11px 16px;
+    flex-shrink: 0;
 }
 
-/* O texto da tarefa deve ocupar todo o espaço que sobrar */
-li span {
-    flex-grow: 1; /* Empurra os botões lá para o canto direito */
-    margin-left: 10px; /* Desgruda do checkbox */
-}
-
-/* Tarefa concluída (checkbox marcado) */
-li.concluida span {
-    text-decoration: line-through;
-    color: #999;
-}
-
-/* ========================================== */
-/* 5. BOTÃO DE VISIBILIDADE DE SENHA          */
-/* ========================================== */
-
-/* Container que envolve o input e o botão do olho */
+/* Botão do olho (visibilidade da senha) */
 .senha-wrapper {
-    position: relative; /* Permite que o filho seja posicionado em relação a ele */
+    position: relative;
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
-/* O input de senha dentro do wrapper não deve ter margem própria */
 .senha-wrapper input {
     margin-bottom: 0;
-    padding-right: 50px; /* Cria espaço interno para o botão não cobrir o texto */
+    padding-right: 48px;
 }
 
-/* O botão do olho ️ */
 .btn-olho {
-    position: absolute; /* Flutua dentro do wrapper */
+    position: absolute;
     right: 0;
     width: auto;
-    background: none; /* Sem cor de fundo */
+    background: none;
     border: none;
-    color: #888;
-    font-size: 1.1rem;
-    padding: 12px 14px;
+    color: var(--text-muted);
+    padding: 10px 14px;
     cursor: pointer;
     font-weight: normal;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
 .btn-olho:hover {
     background: none;
-    color: #333;
+    color: var(--text-secondary);
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* Layout da barra de pesquisa */
+.search-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.search-row input {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+/* ==========================================
+   LISTA DE TAREFAS
+   ========================================== */
+ul {
+    list-style-type: none;
+}
+
+li {
+    background-color: var(--bg-hover);
+    border: 1.5px solid var(--border);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
+}
+
+li:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+li input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+li span {
+    flex-grow: 1;
+    font-size: 0.91rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+li span strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 1px;
+}
+
+li.concluida {
+    opacity: 0.6;
+}
+
+li.concluida span {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* ==========================================
+   SKELETON LOADING
+   ========================================== */
+.skeleton-item {
+    background-color: var(--bg-hover);
+    border: 1.5px solid var(--border);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.skeleton-item:hover {
+    border-color: var(--border);
+    box-shadow: none;
+}
+
+.skeleton-check {
+    width: 17px;
+    height: 17px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    background: linear-gradient(90deg, var(--border) 25%, var(--bg-card) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.skeleton-line {
+    height: 10px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--border) 25%, var(--bg-card) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line.short { width: 40%; }
+.skeleton-line.long  { width: 68%; }
+
+.skeleton-btn {
+    width: 54px;
+    height: 30px;
+    border-radius: var(--radius-xs);
+    flex-shrink: 0;
+    margin-left: 5px;
+    background: linear-gradient(90deg, var(--border) 25%, var(--bg-card) 50%, var(--border) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+/* ==========================================
+   MENSAGENS DE STATUS
+   ========================================== */
+.loading {
+    text-align: center;
+    color: var(--primary);
+    padding: 30px;
+    font-size: 0.94rem;
+}
+
+.erro-carregamento {
+    text-align: center;
+    color: var(--danger);
+    padding: 20px;
+    font-size: 0.94rem;
+    background-color: rgba(239, 68, 68, 0.06);
+    border: 1.5px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-sm);
 }

@@ -15,13 +15,13 @@ export async function listTasks(pesquisa = "", page = 1, limit = 10, usuarioId) 
     if (pesquisa) {
         const termo = `%${pesquisa}%`;
         const resDados = await db.query(
-            `SELECT * FROM tarefas WHERE usuario_id = $1 AND (titulo LIKE $2 OR descricao LIKE $3) LIMIT $4 OFFSET $5`, 
+            `SELECT * FROM tarefas WHERE usuario_id = $1 AND (titulo ILIKE $2 OR descricao ILIKE $3) LIMIT $4 OFFSET $5`, 
             [usuarioId, termo, termo, limit, offset]
         );
         dados = resDados.rows;
 
         const resCount = await db.query(
-            `SELECT COUNT(*) as total FROM tarefas WHERE usuario_id = $1 AND (titulo LIKE $2 OR descricao LIKE $3)`, 
+            `SELECT COUNT(*) as total FROM tarefas WHERE usuario_id = $1 AND (titulo ILIKE $2 OR descricao ILIKE $3)`, 
             [usuarioId, termo, termo]
         );
         total = Number(resCount.rows[0].total);

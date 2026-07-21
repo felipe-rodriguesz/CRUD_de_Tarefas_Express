@@ -2,20 +2,25 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <!-- A tag meta viewport garante que a página se adapte a telas de celulares -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
-    <!-- Conectando nosso arquivo de pintura (CSS) ao esqueleto (HTML) -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <!-- ========================================== -->
-    <!-- CABEÇALHO PRINCIPAL DA PÁGINA              -->
+    <!-- CABEÇALHO COM GRADIENTE E DARK MODE TOGGLE -->
     <!-- ========================================== -->
     <header>
-        <h1>Gerenciador de Tarefas</h1>
-        <p>Seu sistema completo para organização pessoal.</p>
+        <div class="header-content">
+            <div>
+                <h1>Gerenciador de Tarefas</h1>
+                <p>Seu sistema completo para organização pessoal.</p>
+            </div>
+            <button id="btn-dark-mode" class="btn-theme" title="Alternar tema">
+                <i data-lucide="moon"></i>
+            </button>
+        </div>
     </header>
 
     <!-- ========================================== -->
@@ -23,19 +28,23 @@
     <!-- ========================================== -->
     <section id="auth-section">
         <h2>Entrar no Sistema</h2>
-        
+
         <!-- Formulário de Login -->
         <form id="form-login">
             <h3>Já tenho conta</h3>
             <input type="email" id="login-email" placeholder="Seu e-mail" required>
             <div class="senha-wrapper">
                 <input type="password" id="login-senha" placeholder="Sua senha" required>
-                <button type="button" class="btn-olho" onclick="toggleSenha('login-senha')">&#128065;</button>
+                <button type="button" class="btn-olho" onclick="toggleSenha('login-senha')">
+                    <i data-lucide="eye"></i>
+                </button>
             </div>
-            <button type="submit">Entrar</button>
+            <button type="submit">
+                <i data-lucide="log-in"></i> Entrar
+            </button>
         </form>
 
-        <br>
+        <hr>
 
         <!-- Formulário de Cadastro -->
         <form id="form-cadastro">
@@ -44,39 +53,45 @@
             <input type="email" id="cadastro-email" placeholder="Seu e-mail" required>
             <div class="senha-wrapper">
                 <input type="password" id="cadastro-senha" placeholder="Sua senha" required>
-                <button type="button" class="btn-olho" onclick="toggleSenha('cadastro-senha')">&#128065;</button>
+                <button type="button" class="btn-olho" onclick="toggleSenha('cadastro-senha')">
+                    <i data-lucide="eye"></i>
+                </button>
             </div>
-            <button type="submit">Cadastrar</button>
+            <button type="submit">
+                <i data-lucide="user-plus"></i> Cadastrar
+            </button>
         </form>
     </section>
-
-    <hr>
 
     <!-- ========================================== -->
     <!-- ÁREA DE TAREFAS (Invisível até o login)    -->
     <!-- ========================================== -->
     <section id="tasks-section">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="section-header">
             <h2>Minhas Tarefas</h2>
-            <button id="btn-sair" style="background-color: #e74c3c; color: white;">Sair da Conta</button>
+            <button id="btn-sair">
+                <i data-lucide="log-out"></i> Sair
+            </button>
         </div>
 
         <!-- Formulário para CRIAR uma nova tarefa -->
         <form id="form-tarefa">
             <input type="text" id="tarefa-titulo" placeholder="Título da tarefa" required>
             <textarea id="tarefa-descricao" placeholder="Descrição da tarefa" required></textarea>
-            <button type="submit">Adicionar Tarefa</button>
+            <button type="submit">
+                <i data-lucide="plus-circle"></i> Adicionar Tarefa
+            </button>
         </form>
 
         <br>
 
         <!-- Barra de PESQUISA -->
-        <div>
+        <div class="search-row">
             <input type="text" id="input-pesquisa" placeholder="Buscar tarefa...">
-            <button id="btn-pesquisar">Buscar</button>
+            <button id="btn-pesquisar">
+                <i data-lucide="search"></i>
+            </button>
         </div>
-
-        <br>
 
         <!-- LISTA onde as tarefas vão aparecer dinamicamente -->
         <ul id="lista-tarefas">
@@ -84,6 +99,8 @@
         </ul>
     </section>
 
+    <!-- Lucide Icons (CDN) -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <!-- Conectando nosso arquivo de inteligência (JavaScript) -->
     <script src="script.js"></script>
 </body>

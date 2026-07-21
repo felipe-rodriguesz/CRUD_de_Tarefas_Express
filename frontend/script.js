@@ -29,20 +29,59 @@ const btnSair = document.getElementById("btn-sair");
 
 const inputPesquisa = document.getElementById("input-pesquisa");
 const btnPesquisar = document.getElementById("btn-pesquisar");
+const btnDarkMode = document.getElementById("btn-dark-mode");
 
 
 // ==========================================
 // 1.5 TOGGLE DE VISIBILIDADE DE SENHA
 // ==========================================
 
-// Função global chamada ao clicar no botão do olho
 function toggleSenha(inputId) {
     const input = document.getElementById(inputId);
     if (input.type === "password") {
-        input.type = "text";     // Torna a senha visível
+        input.type = "text";
     } else {
-        input.type = "password"; // Esconde novamente
+        input.type = "password";
     }
+}
+
+
+// ==========================================
+// 1.6 DARK MODE
+// ==========================================
+
+// Inicializa o tema salvo no localStorage ao carregar a página
+if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+}
+
+btnDarkMode.addEventListener("click", function () {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    lucide.createIcons(); // Rerenderiza ícones após troca de tema
+});
+
+
+// ==========================================
+// 1.7 SKELETON LOADING
+// ==========================================
+
+function mostrarSkeleton() {
+    let html = "";
+    for (let i = 0; i < 3; i++) {
+        html += `
+            <li class="skeleton-item">
+                <div class="skeleton-check"></div>
+                <div class="skeleton-content">
+                    <div class="skeleton-line short"></div>
+                    <div class="skeleton-line long"></div>
+                </div>
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn"></div>
+            </li>
+        `;
+    }
+    listaTarefasHTML.innerHTML = html;
 }
 
 
@@ -177,6 +216,9 @@ async function carregarTarefas(textoBusca = "") {
         ? `http://localhost:3000/tasks?search=${encodeURIComponent(textoBusca)}`
         : "http://localhost:3000/tasks";
 
+    // Mostra skeleton enquanto carrega
+    mostrarSkeleton();
+
     try {
         // 2. Fazemos o pedido GET enviando o token e a URL (com ou sem busca)
         const resposta = await fetch(url, {
@@ -212,18 +254,24 @@ async function carregarTarefas(textoBusca = "") {
                     li.classList.add("concluida");
                 }
 
-                // Injetamos o conteúdo HTML dentro desse <li>
-                // Chamamos funções globais ao clicar nos botões, passando o ID da tarefa!
+                // Injetamos o conteúdo HTML com ícones Lucide
                 li.innerHTML = `
                     <input type="checkbox" onclick="toggleTarefa(${tarefa.id}, '${tarefa.status}')" ${tarefa.status === "CONCLUÍDO!" ? "checked" : ""}>
-                    <span><strong>${tarefa.titulo}</strong> - ${tarefa.descricao}</span>
-                    <button onclick="editarTarefa(${tarefa.id}, '${tarefa.titulo}', '${tarefa.descricao}')">Editar</button>
-                    <button onclick="excluirTarefa(${tarefa.id})">Excluir</button>
+                    <span><strong>${tarefa.titulo}</strong>${tarefa.descricao}</span>
+                    <button onclick="editarTarefa(${tarefa.id}, '${tarefa.titulo}', '${tarefa.descricao}')" title="Editar">
+                        <i data-lucide="pencil"></i>
+                    </button>
+                    <button onclick="excluirTarefa(${tarefa.id})" title="Excluir">
+                        <i data-lucide="trash-2"></i>
+                    </button>
                 `;
 
                 // Colamos esse <li> novinho dentro da <ul> na tela
                 listaTarefasHTML.appendChild(li);
             });
+
+            // Renderiza os ícones Lucide nos elementos recém-criados
+            lucide.createIcons();
 
         } else {
             alert("Sua sessão expirou. Faça login novamente.");
@@ -231,6 +279,8 @@ async function carregarTarefas(textoBusca = "") {
         }
 
     } catch (erro) {
+        // Mostra mensagem de erro dentro da lista caso o servidor não responda
+        listaTarefasHTML.innerHTML = "<p class='erro-carregamento'>&#10060; Falha ao carregar. O servidor está rodando?</p>";
         console.error("Erro ao carregar tarefas:", erro);
     }
 }
@@ -392,3 +442,6 @@ window.editarTarefa = async function(id, tituloAtual, descricaoAtual) {
         console.error("Erro ao editar:", erro);
     }
 };
+
+// Inicializa os ícones do Lucide que já estão estáticos no HTML
+lucide.createIcons();
