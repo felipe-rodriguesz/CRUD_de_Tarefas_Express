@@ -28,7 +28,10 @@
         <form id="form-login">
             <h3>Já tenho conta</h3>
             <input type="email" id="login-email" placeholder="Seu e-mail" required>
-            <input type="password" id="login-senha" placeholder="Sua senha" required>
+            <div class="senha-wrapper">
+                <input type="password" id="login-senha" placeholder="Sua senha" required>
+                <button type="button" class="btn-olho" onclick="toggleSenha('login-senha')">&#128065;</button>
+            </div>
             <button type="submit">Entrar</button>
         </form>
 
@@ -39,7 +42,10 @@
             <h3>Criar nova conta</h3>
             <input type="text" id="cadastro-nome" placeholder="Seu nome" required>
             <input type="email" id="cadastro-email" placeholder="Seu e-mail" required>
-            <input type="password" id="cadastro-senha" placeholder="Sua senha" required>
+            <div class="senha-wrapper">
+                <input type="password" id="cadastro-senha" placeholder="Sua senha" required>
+                <button type="button" class="btn-olho" onclick="toggleSenha('cadastro-senha')">&#128065;</button>
+            </div>
             <button type="submit">Cadastrar</button>
         </form>
     </section>
@@ -50,7 +56,10 @@
     <!-- ÁREA DE TAREFAS (Invisível até o login)    -->
     <!-- ========================================== -->
     <section id="tasks-section">
-        <h2>Minhas Tarefas</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Minhas Tarefas</h2>
+            <button id="btn-sair" style="background-color: #e74c3c; color: white;">Sair da Conta</button>
+        </div>
 
         <!-- Formulário para CRIAR uma nova tarefa -->
         <form id="form-tarefa">
@@ -69,27 +78,13 @@
 
         <br>
 
-        <!-- LISTA onde as tarefas vão aparecer -->
+        <!-- LISTA onde as tarefas vão aparecer dinamicamente -->
         <ul id="lista-tarefas">
-            
-            <!-- Tarefa "Dummy" (Falsa) 1 -->
-            <li>
-                <input type="checkbox">
-                <span><strong>Estudar Node.js</strong> - Revisar as aulas de API REST</span>
-                <button>Editar</button>
-                <button>Excluir</button>
-            </li>
-
-            <!-- Tarefa "Dummy" (Falsa) 2 -->
-            <li class="concluida">
-                <input type="checkbox" checked>
-                <span><strong>Finalizar Backend</strong> - CRUD e BD na nuvem concluídos</span>
-                <button>Editar</button>
-                <button>Excluir</button>
-            </li>
-
+            <!-- O JavaScript vai injetar os <li> aqui dentro! -->
         </ul>
     </section>
 
+    <!-- Conectando nosso arquivo de inteligência (JavaScript) -->
+    <script src="script.js"></script>
 </body>
 </html>
