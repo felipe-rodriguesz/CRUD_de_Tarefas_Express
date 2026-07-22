@@ -1,5 +1,7 @@
 # 🚀 Full Stack Task Manager - Node.js, Express & Vanilla JS
 
+🌍 **Acesse a aplicação ao vivo:** [https://crud-de-tarefas-express.onrender.com](https://crud-de-tarefas-express.onrender.com)
+
 ## 📌 Sobre o projeto
 Um sistema completo (Full Stack) de gerenciamento de tarefas, evoluído de uma API isolada para uma aplicação web com interface visual. 
 O **Backend** é construído com Node.js e Express, utilizando arquitetura **Multi-tenant** e autenticação segura via JWT. 
