@@ -3,6 +3,12 @@ import cors from 'cors';
 import { rotas } from "./routes.js";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Configuração necessária para usar __dirname no ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const swaggerOptions = {
     swaggerDefinition: {
@@ -37,8 +43,11 @@ const app = express();
 app.use(cors()); // Permite que qualquer Frontend converse com a API
 app.use(express.json());
 
-// Rota da Documentação Oficial
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Faz o Express servir nossa pasta 'frontend' como um site público!
+// Ao acessar a URL base, ele vai carregar automaticamente o index.html
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.use(rotas);
 

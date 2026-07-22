@@ -117,7 +117,7 @@ formLogin.addEventListener("submit", async function (evento) {
 
     try {
         // 3. Fazemos a ponte HTTP (O Carteiro) para o nosso Backend Node.js
-        const resposta = await fetch("http://localhost:3000/usuarios/login", {
+        const resposta = await fetch("/usuarios/login", {
             method: "POST", // Vamos enviar dados fechados
             headers: {
                 "Content-Type": "application/json" // Avisamos que estamos enviando um JSON
@@ -166,7 +166,7 @@ formCadastro.addEventListener("submit", async function (evento) {
     const senha = cadastroSenha.value;
 
     try {
-        const resposta = await fetch("http://localhost:3000/usuarios/cadastro", {
+        const resposta = await fetch("/usuarios/cadastro", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -213,8 +213,8 @@ async function carregarTarefas(textoBusca = "") {
 
     // Montamos a URL: se houver texto de busca, adicionamos como parâmetro
     const url = textoBusca
-        ? `http://localhost:3000/tasks?search=${encodeURIComponent(textoBusca)}`
-        : "http://localhost:3000/tasks";
+        ? `/tasks?search=${encodeURIComponent(textoBusca)}`
+        : "/tasks";
 
     // Mostra skeleton enquanto carrega
     mostrarSkeleton();
@@ -297,7 +297,7 @@ formTarefa.addEventListener("submit", async function (evento) {
     const token = localStorage.getItem("tokenTarefas");
 
     try {
-        const resposta = await fetch("http://localhost:3000/tasks", {
+        const resposta = await fetch("/tasks", {
             method: "POST", // POST significa "Criar/Salvar"
             headers: {
                 "Content-Type": "application/json",
@@ -335,7 +335,7 @@ window.excluirTarefa = async function(id) {
     const token = localStorage.getItem("tokenTarefas");
 
     try {
-        const resposta = await fetch(`http://localhost:3000/tasks/${id}`, {
+        const resposta = await fetch(`/tasks/${id}`, {
             method: "DELETE", // Comando de Destruição
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -362,7 +362,7 @@ window.toggleTarefa = async function(id, statusAtual) {
 
         if (statusAtual === "CONCLUÍDO!") {
             // Tarefa já está concluída: vamos DESMARCAR via PUT, voltando ao status pendente
-            resposta = await fetch(`http://localhost:3000/tasks/${id}`, {
+            resposta = await fetch(`/tasks/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -372,7 +372,7 @@ window.toggleTarefa = async function(id, statusAtual) {
             });
         } else {
             // Tarefa está pendente: vamos CONCLUIR via PATCH
-            resposta = await fetch(`http://localhost:3000/tasks/${id}/complete`, {
+            resposta = await fetch(`/tasks/${id}/complete`, {
                 method: "PATCH",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -423,7 +423,7 @@ window.editarTarefa = async function(id, tituloAtual, descricaoAtual) {
     const token = localStorage.getItem("tokenTarefas");
 
     try {
-        const resposta = await fetch(`http://localhost:3000/tasks/${id}`, {
+        const resposta = await fetch(`/tasks/${id}`, {
             method: "PUT", // PUT = Atualizar o recurso completo
             headers: {
                 "Content-Type": "application/json",
