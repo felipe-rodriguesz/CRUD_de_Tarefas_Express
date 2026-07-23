@@ -5,7 +5,7 @@
 ## 📌 Sobre o projeto
 Um sistema completo (Full Stack) de gerenciamento de tarefas, evoluído de uma API isolada para uma aplicação web com interface visual. 
 O **Backend** é construído com Node.js e Express, utilizando arquitetura **Multi-tenant** e autenticação segura via JWT. 
-O **Frontend** foi construído do zero utilizando HTML, CSS Moderno (com variáveis, animações e Dark Mode) e Vanilla JavaScript, consumindo diretamente a API REST.
+O **Frontend** foi construído com HTML, **Tailwind CSS** (design responsivo inspirado em protótipos do Figma) e Vanilla JavaScript, consumindo diretamente a API REST.
 
 ## ⚙️ Funcionalidades
 ### Backend (API)
@@ -19,10 +19,10 @@ O **Frontend** foi construído do zero utilizando HTML, CSS Moderno (com variáv
 ### Frontend (Interface Web)
 - **Single Page Application (SPA):** Transições de tela (Login -> Tarefas) sem recarregar a página.
 - **Consumo de API:** Integração completa usando `fetch()` e injeção do cabeçalho `Authorization`.
-- **Design Moderno:** Uso de variáveis CSS, Glassmorphism e CSS Reset.
-- **Dark Mode:** Tema claro/escuro com preferência salva no `localStorage`.
-- **Experiência do Usuário (UX):** Skeleton loading enquanto busca dados, ícones Lucide e visibilidade de senhas.
-- **Feedback visual:** Tratamento de erros de conexão e estado de loading.
+- **Design Figma-like & Tailwind CSS:** Interface premium com fundo dividido (split background), tipografia fluida e responsividade para Mobile e Desktop.
+- **Dark Mode Profundo:** Tema escuro (roxo profundo) ativado por botão com preferência salva no `localStorage`.
+- **Componentes Customizados:** Substituição total de `alert()`, `confirm()` e `prompt()` nativos por **Toast Notifications**, **Modais de Confirmação** e **Modais de Edição** criados do zero.
+- **Experiência do Usuário (UX):** Skeleton loading enquanto busca dados, saudação dinâmica com o nome do usuário e ícones Lucide.
 
 ## 💻 Tecnologias
 ### Backend
@@ -34,8 +34,8 @@ O **Frontend** foi construído do zero utilizando HTML, CSS Moderno (com variáv
 - **Swagger / OpenAPI** (Documentação)
 
 ### Frontend
-- **HTML5 & CSS3** (Estrutura e Estilização Nativa)
-- **Vanilla JavaScript** (Lógica, DOM e chamadas HTTP)
+- **HTML5 & Vanilla JavaScript** (Estrutura, Lógica, DOM e chamadas HTTP)
+- **Tailwind CSS** (Framework de Estilização Utilitária e Responsiva)
 - **Lucide Icons** (Ícones SVG Vetoriais)
 - **Google Fonts** (Tipografia Inter)
 
@@ -68,7 +68,7 @@ O **Frontend** foi construído do zero utilizando HTML, CSS Moderno (com variáv
 ## 🧠 O que aprendi
 Neste projeto, a aplicação evoluiu de um simples script backend para um produto Full Stack funcional. Os principais aprendizados foram:
 - **Integração Front e Back:** Compreensão profunda de como clientes HTTP (`fetch`) se comunicam com APIs, gerenciando Promessas (`async/await`) e cabeçalhos de autenticação (`Bearer Token`).
-- **Arquitetura de UI:** Manipulação do DOM (Document Object Model) via JavaScript puro, construindo elementos (`createElement`, `innerHTML`) baseados em arrays de objetos do banco de dados.
-- **Estilização Moderna:** Criação de um Design System básico em CSS puro usando `:root` para gerenciar as cores de Dark/Light mode sem necessitar de frameworks pesados.
-- **Persistência no Cliente:** Uso do `localStorage` para manter o usuário logado e lembrar as preferências de tema da interface.
+- **Arquitetura de UI:** Manipulação do DOM (Document Object Model) via JavaScript puro, construindo componentes dinâmicos (Toasts, Modais, Cards) baseados em arrays de objetos do banco de dados.
+- **Estilização com Tailwind CSS:** Como traduzir um design complexo do Figma diretamente para classes utilitárias no HTML, lidando com responsividade (`sm:`, `lg:`), posicionamento absoluto para simular fundos divididos e injeção do `darkMode: 'class'`.
+- **Persistência no Cliente:** Uso do `localStorage` para manter o usuário logado, exibir dinamicamente o nome do usuário na interface e lembrar as preferências de tema da aplicação.
 - **Segurança de APIs:** Proteção real de endpoints com validação de Tokens JWT no middleware do Node.js, impedindo vazamento de dados (Multi-tenant).
