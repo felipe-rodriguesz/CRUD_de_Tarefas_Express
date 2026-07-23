@@ -29,6 +29,51 @@ const btnSair = document.getElementById("btn-sair");
 const inputPesquisa = document.getElementById("input-pesquisa");
 const btnPesquisar = document.getElementById("btn-pesquisar");
 
+
+// ==========================================
+// 1.2 DARK MODE
+// ==========================================
+
+function isDarkMode() {
+    return document.documentElement.classList.contains("dark");
+}
+
+function atualizarIconesDarkMode() {
+    const escuro = isDarkMode();
+    document.querySelectorAll(".dark-icon-moon").forEach(el => {
+        el.classList.toggle("hidden", escuro);
+    });
+    document.querySelectorAll(".dark-icon-sun").forEach(el => {
+        el.classList.toggle("hidden", !escuro);
+    });
+}
+
+function alternarDarkMode() {
+    document.documentElement.classList.toggle("dark");
+    const escuro = isDarkMode();
+    localStorage.setItem("darkMode", escuro ? "ativo" : "inativo");
+    atualizarIconesDarkMode();
+}
+
+// Inicializa dark mode ao carregar a página
+function inicializarDarkMode() {
+    const preferencia = localStorage.getItem("darkMode");
+    if (preferencia === "ativo") {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.remove("dark");
+    }
+    atualizarIconesDarkMode();
+}
+
+// Conecta TODOS os botões de dark mode (login, tasks mobile, tasks desktop)
+document.querySelectorAll("#btn-darkmode-login, #btn-darkmode-tasks, #btn-darkmode-tasks-desktop").forEach(btn => {
+    if (btn) btn.addEventListener("click", alternarDarkMode);
+});
+
+inicializarDarkMode();
+
+
 // ==========================================
 // 1.3 SISTEMA DE TOAST NOTIFICATIONS
 // ==========================================
@@ -49,7 +94,7 @@ function mostrarToast(mensagem, tipo = "info", duracaoMs = 3500) {
     const cores = {
         sucesso: { bg: "bg-figma-accent", text: "text-figma-dark", icon: "check-circle" },
         erro:    { bg: "bg-figma-red",    text: "text-white",      icon: "alert-circle" },
-        info:    { bg: "bg-figma-dark",   text: "text-white",      icon: "info" }
+        info:    { bg: "bg-figma-dark dark:bg-dm-surface", text: "text-white", icon: "info" }
     };
     const estilo = cores[tipo] || cores.info;
 
@@ -88,29 +133,31 @@ function mostrarToast(mensagem, tipo = "info", duracaoMs = 3500) {
 
 /**
  * Exibe um modal de confirmação estilizado (substitui confirm()).
- * @param {string} titulo - Título do modal.
- * @param {string} mensagem - Mensagem descritiva.
- * @param {string} textoBotao - Texto do botão de confirmar.
- * @returns {Promise<boolean>} - true se confirmou, false se cancelou.
  */
 function mostrarConfirmacao(titulo, mensagem, textoBotao = "Confirmar") {
     return new Promise((resolve) => {
+        const escuro = isDarkMode();
+        const cardBg = escuro ? "bg-[#2B2533]" : "bg-white";
+        const textPrimary = escuro ? "text-[#E8E4ED]" : "text-figma-dark";
+        const textSecondary = escuro ? "text-[#9B95A5]" : "text-gray-500";
+        const borderColor = escuro ? "border-[#3A3545]" : "border-figma-border";
+
         const overlay = document.createElement("div");
         overlay.className = "fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] flex items-center justify-center p-6 opacity-0 transition-opacity duration-200";
 
         overlay.innerHTML = `
-            <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-sm p-8 flex flex-col gap-5 transform scale-95 transition-transform duration-200">
+            <div class="${cardBg} rounded-[24px] shadow-2xl w-full max-w-sm p-8 flex flex-col gap-5 transform scale-95 transition-transform duration-200">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full bg-figma-red/10 flex items-center justify-center shrink-0">
                         <i data-lucide="alert-triangle" class="w-6 h-6 text-figma-red"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-figma-dark">${titulo}</h3>
-                        <p class="text-sm text-gray-500 font-medium mt-1">${mensagem}</p>
+                        <h3 class="text-lg font-bold ${textPrimary}">${titulo}</h3>
+                        <p class="text-sm ${textSecondary} font-medium mt-1">${mensagem}</p>
                     </div>
                 </div>
                 <div class="flex gap-3 mt-2">
-                    <button id="modal-cancelar" class="flex-1 py-3 rounded-xl border-2 border-figma-border text-figma-dark font-bold hover:bg-gray-50 transition-all text-[15px]">
+                    <button id="modal-cancelar" class="flex-1 py-3 rounded-xl border-2 ${borderColor} ${textPrimary} font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-[15px]">
                         Cancelar
                     </button>
                     <button id="modal-confirmar" class="flex-1 py-3 rounded-xl bg-figma-red text-white font-bold hover:bg-red-500 transition-all text-[15px]">
@@ -127,8 +174,8 @@ function mostrarConfirmacao(titulo, mensagem, textoBotao = "Confirmar") {
         requestAnimationFrame(() => {
             overlay.classList.remove("opacity-0");
             overlay.classList.add("opacity-100");
-            overlay.querySelector(".bg-white").classList.remove("scale-95");
-            overlay.querySelector(".bg-white").classList.add("scale-100");
+            const card = overlay.querySelector(`.${cardBg.split(" ")[0]}`);
+            if (card) { card.classList.remove("scale-95"); card.classList.add("scale-100"); }
         });
 
         function fechar(resultado) {
@@ -139,44 +186,52 @@ function mostrarConfirmacao(titulo, mensagem, textoBotao = "Confirmar") {
 
         overlay.querySelector("#modal-cancelar").addEventListener("click", () => fechar(false));
         overlay.querySelector("#modal-confirmar").addEventListener("click", () => fechar(true));
-        // Fechar ao clicar fora do modal
         overlay.addEventListener("click", (e) => { if (e.target === overlay) fechar(false); });
     });
 }
 
 /**
  * Exibe um modal de edição com campos de título e descrição (substitui prompt()).
- * @param {string} tituloAtual - Valor atual do título.
- * @param {string} descricaoAtual - Valor atual da descrição.
- * @returns {Promise<{titulo: string, descricao: string}|null>} - Dados ou null se cancelou.
  */
 function mostrarModalEditar(tituloAtual, descricaoAtual) {
     return new Promise((resolve) => {
+        const escuro = isDarkMode();
+        const cardBg = escuro ? "bg-[#2B2533]" : "bg-white";
+        const textPrimary = escuro ? "text-[#E8E4ED]" : "text-figma-dark";
+        const textSecondary = escuro ? "text-[#9B95A5]" : "text-gray-500";
+        const inputBg = escuro ? "bg-[#1A1625]" : "bg-figma-bg";
+        const inputFocusBg = escuro ? "focus:bg-[#2B2533]" : "focus:bg-white";
+        const borderColor = escuro ? "border-[#3A3545]" : "border-figma-border";
+        const inputText = escuro ? "text-[#E8E4ED]" : "";
+        const btnBg = escuro ? "bg-figma-accent text-figma-dark" : "bg-figma-dark text-white";
+        const iconAccent = escuro ? "text-figma-accent" : "text-figma-dark";
+        const iconBg = escuro ? "bg-figma-accent/20" : "bg-figma-accent/30";
+
         const overlay = document.createElement("div");
         overlay.className = "fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] flex items-center justify-center p-6 opacity-0 transition-opacity duration-200";
 
         overlay.innerHTML = `
-            <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-md p-8 flex flex-col gap-5 transform scale-95 transition-transform duration-200">
+            <div class="${cardBg} rounded-[24px] shadow-2xl w-full max-w-md p-8 flex flex-col gap-5 transform scale-95 transition-transform duration-200 modal-card">
                 <div class="flex items-center gap-3 mb-1">
-                    <div class="w-12 h-12 rounded-full bg-figma-accent/30 flex items-center justify-center shrink-0">
-                        <i data-lucide="pencil" class="w-6 h-6 text-figma-dark"></i>
+                    <div class="w-12 h-12 rounded-full ${iconBg} flex items-center justify-center shrink-0">
+                        <i data-lucide="pencil" class="w-6 h-6 ${iconAccent}"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-figma-dark">Editar Tarefa</h3>
+                    <h3 class="text-xl font-bold ${textPrimary}">Editar Tarefa</h3>
                 </div>
 
                 <div class="flex flex-col gap-3">
-                    <label class="text-sm font-bold text-gray-500 uppercase tracking-wider">Título</label>
-                    <input type="text" id="edit-titulo" value="${tituloAtual.replace(/"/g, '&quot;')}" class="w-full px-4 py-3.5 rounded-xl border border-figma-border bg-figma-bg outline-none focus:border-figma-dark focus:bg-white font-semibold text-[16px] transition-all">
+                    <label class="text-sm font-bold ${textSecondary} uppercase tracking-wider">Título</label>
+                    <input type="text" id="edit-titulo" value="${tituloAtual.replace(/"/g, '&quot;')}" class="w-full px-4 py-3.5 rounded-xl border ${borderColor} ${inputBg} outline-none focus:border-figma-dark dark:focus:border-figma-accent ${inputFocusBg} font-semibold text-[16px] transition-all ${inputText}">
                     
-                    <label class="text-sm font-bold text-gray-500 uppercase tracking-wider mt-1">Descrição</label>
-                    <textarea id="edit-descricao" rows="3" class="w-full px-4 py-3.5 rounded-xl border border-figma-border bg-figma-bg outline-none focus:border-figma-dark focus:bg-white resize-none text-[15px] transition-all">${descricaoAtual}</textarea>
+                    <label class="text-sm font-bold ${textSecondary} uppercase tracking-wider mt-1">Descrição</label>
+                    <textarea id="edit-descricao" rows="3" class="w-full px-4 py-3.5 rounded-xl border ${borderColor} ${inputBg} outline-none focus:border-figma-dark dark:focus:border-figma-accent ${inputFocusBg} resize-none text-[15px] transition-all ${inputText}">${descricaoAtual}</textarea>
                 </div>
 
                 <div class="flex gap-3 mt-2">
-                    <button id="edit-cancelar" class="flex-1 py-3.5 rounded-xl border-2 border-figma-border text-figma-dark font-bold hover:bg-gray-50 transition-all text-[15px]">
+                    <button id="edit-cancelar" class="flex-1 py-3.5 rounded-xl border-2 ${borderColor} ${textPrimary} font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition-all text-[15px]">
                         Cancelar
                     </button>
-                    <button id="edit-salvar" class="flex-1 py-3.5 rounded-xl bg-figma-dark text-white font-bold hover:bg-opacity-90 transition-all text-[15px] flex items-center justify-center gap-2">
+                    <button id="edit-salvar" class="flex-1 py-3.5 rounded-xl ${btnBg} font-bold hover:bg-opacity-90 transition-all text-[15px] flex items-center justify-center gap-2">
                         <i data-lucide="check" class="w-5 h-5"></i> Salvar
                     </button>
                 </div>
@@ -190,9 +245,8 @@ function mostrarModalEditar(tituloAtual, descricaoAtual) {
         requestAnimationFrame(() => {
             overlay.classList.remove("opacity-0");
             overlay.classList.add("opacity-100");
-            overlay.querySelector(".bg-white").classList.remove("scale-95");
-            overlay.querySelector(".bg-white").classList.add("scale-100");
-            // Foca automaticamente no campo de título
+            const card = overlay.querySelector(".modal-card");
+            if (card) { card.classList.remove("scale-95"); card.classList.add("scale-100"); }
             overlay.querySelector("#edit-titulo").focus();
             overlay.querySelector("#edit-titulo").select();
         });
@@ -213,9 +267,7 @@ function mostrarModalEditar(tituloAtual, descricaoAtual) {
             }
             fechar({ titulo: novoTitulo, descricao: novaDescricao });
         });
-        // Fechar ao clicar fora
         overlay.addEventListener("click", (e) => { if (e.target === overlay) fechar(null); });
-        // Salvar ao apertar Enter no campo de descrição
         overlay.querySelector("#edit-descricao").addEventListener("keydown", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -245,16 +297,18 @@ function toggleSenha(inputId) {
 // ==========================================
 
 function mostrarSkeleton() {
+    const skeletonBg = isDarkMode() ? "bg-[#2B2533]" : "bg-gray-300";
+    const skeletonPulse = isDarkMode() ? "bg-[#3A3545]" : "bg-gray-400";
     let html = "";
     for (let i = 0; i < 3; i++) {
         html += `
-            <li class="bg-gray-300 rounded-figma-card p-6 h-48 animate-pulse relative overflow-hidden">
-                <div class="w-2/3 h-6 bg-gray-400 rounded-md mb-4"></div>
-                <div class="w-full h-4 bg-gray-400 rounded-md mb-2"></div>
-                <div class="w-4/5 h-4 bg-gray-400 rounded-md mb-8"></div>
+            <li class="${skeletonBg} rounded-figma-card p-6 h-48 animate-pulse relative overflow-hidden">
+                <div class="w-2/3 h-6 ${skeletonPulse} rounded-md mb-4"></div>
+                <div class="w-full h-4 ${skeletonPulse} rounded-md mb-2"></div>
+                <div class="w-4/5 h-4 ${skeletonPulse} rounded-md mb-8"></div>
                 <div class="flex gap-3">
-                    <div class="w-24 h-10 bg-gray-400 rounded-full"></div>
-                    <div class="w-10 h-10 bg-gray-400 rounded-full"></div>
+                    <div class="w-24 h-10 ${skeletonPulse} rounded-full"></div>
+                    <div class="w-10 h-10 ${skeletonPulse} rounded-full"></div>
                 </div>
             </li>
         `;
@@ -429,7 +483,7 @@ async function carregarTarefas(textoBusca = "") {
             // 4. Se o usuário não tiver tarefas (ou a busca não encontrar nada)...
             if (tarefasArray.length === 0) {
                 listaTarefasHTML.innerHTML = `
-                    <li class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400">
+                    <li class="col-span-full flex flex-col items-center justify-center py-16 text-gray-400 dark:text-dm-muted">
                         <i data-lucide="inbox" class="w-16 h-16 mb-4 opacity-40"></i>
                         <p class="text-lg font-semibold">Nenhuma tarefa encontrada</p>
                         <p class="text-sm mt-1">Crie uma nova tarefa para começar!</p>
@@ -440,15 +494,21 @@ async function carregarTarefas(textoBusca = "") {
             }
 
             // 5. Para CADA tarefa que veio do banco de dados...
+            const escuro = isDarkMode();
             tarefasArray.forEach(tarefa => {
                 const li = document.createElement("li");
                 
                 const isConcluido = tarefa.status === "CONCLUÍDO!";
                 
-                // Aplicamos as classes do Figma "Latest Project" card
-                // Alternamos a cor de fundo baseado no ID ou status
-                const bgClass = isConcluido ? "bg-gray-300 opacity-60" : "bg-figma-accent";
-                const textColor = isConcluido ? "text-gray-500" : "text-figma-dark";
+                // No dark mode, cards concluídos ficam mais sutis
+                let bgClass, textColor;
+                if (isConcluido) {
+                    bgClass = escuro ? "bg-dm-surface opacity-60" : "bg-gray-300 opacity-60";
+                    textColor = escuro ? "text-dm-muted" : "text-gray-500";
+                } else {
+                    bgClass = "bg-figma-accent";
+                    textColor = "text-figma-dark";
+                }
                 
                 li.className = `${bgClass} rounded-figma-card p-6 relative overflow-hidden group shadow-sm transition-transform hover:-translate-y-1`;
 
@@ -456,13 +516,18 @@ async function carregarTarefas(textoBusca = "") {
                 const tituloEscapado = tarefa.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 const descricaoEscapada = tarefa.descricao.replace(/'/g, "\\'").replace(/"/g, "&quot;");
 
+                // Botão de ação (Pendente/Concluída) muda de cor no dark mode
+                const btnActionClass = escuro && !isConcluido
+                    ? "bg-figma-dark text-figma-accent"
+                    : "bg-figma-dark text-white";
+
                 li.innerHTML = `
                     <div class="relative z-10">
                         <h4 class="text-[22px] font-bold ${textColor} leading-tight mb-2 ${isConcluido ? 'line-through' : ''}">${tarefa.titulo}</h4>
                         <p class="text-[16px] ${textColor} font-medium mb-8 opacity-80 ${isConcluido ? 'line-through' : ''}">${tarefa.descricao}</p>
                         
                         <div class="flex items-center gap-3">
-                            <button onclick="toggleTarefa(${tarefa.id}, '${tarefa.status}')" class="bg-figma-dark text-white px-5 py-2.5 rounded-full font-medium text-[14px] flex items-center gap-2 hover:bg-opacity-90 transition-colors shadow-sm">
+                            <button onclick="toggleTarefa(${tarefa.id}, '${tarefa.status}')" class="${btnActionClass} px-5 py-2.5 rounded-full font-medium text-[14px] flex items-center gap-2 hover:bg-opacity-90 transition-colors shadow-sm">
                                 <i data-lucide="${isConcluido ? 'check-circle' : 'circle'}" class="w-4 h-4"></i>
                                 ${isConcluido ? 'Concluída' : 'Pendente'}
                             </button>
@@ -497,7 +562,7 @@ async function carregarTarefas(textoBusca = "") {
             <li class="col-span-full flex flex-col items-center justify-center py-16 text-figma-red">
                 <i data-lucide="wifi-off" class="w-16 h-16 mb-4 opacity-60"></i>
                 <p class="text-lg font-semibold">Falha ao carregar</p>
-                <p class="text-sm mt-1 text-gray-500">O servidor está rodando?</p>
+                <p class="text-sm mt-1 text-gray-500 dark:text-dm-muted">O servidor está rodando?</p>
             </li>
         `;
         lucide.createIcons();

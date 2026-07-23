@@ -9,6 +9,11 @@
   como personalização de scrollbars, pseudo-elementos complexos, etc.
 */
 
+/* Transição suave ao alternar temas */
+html.dark {
+    color-scheme: dark;
+}
+
 /* Ocultar scrollbar para manter um visual de app nativo limpo */
 ::-webkit-scrollbar {
     width: 6px;
@@ -23,17 +28,4 @@
 }
 .dark ::-webkit-scrollbar-thumb {
     background: #4b5563;
-}
-
-/* 
-  Mensagem de erro customizada
-*/
-.erro-carregamento {
-    text-align: center;
-    color: #ef4444;
-    padding: 20px;
-    font-size: 0.94rem;
-    background-color: rgba(239, 68, 68, 0.06);
-    border: 1.5px solid rgba(239, 68, 68, 0.2);
-    border-radius: 9px;
 }

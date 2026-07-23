@@ -14,6 +14,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -26,6 +27,14 @@
                             redBg: '#FFAA9B',
                             yellow: '#FFDA55',
                             border: '#E3E3F2'
+                        },
+                        dm: {
+                            bg: '#1A1625',
+                            surface: '#2B2533',
+                            deep: '#0D0B12',
+                            border: '#3A3545',
+                            text: '#E8E4ED',
+                            muted: '#9B95A5'
                         }
                     },
                     fontFamily: {
@@ -42,7 +51,7 @@
     
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-figma-bg text-figma-dark min-h-screen font-sans">
+<body class="bg-figma-bg dark:bg-dm-bg text-figma-dark dark:text-dm-text min-h-screen font-sans transition-colors duration-300">
 
     <!-- Container principal agora ocupa 100% da tela em vez de max-420px -->
     <main class="w-full min-h-screen flex flex-col relative">
@@ -52,7 +61,13 @@
         <!-- ========================================== -->
         <section id="auth-section" class="flex-1 flex flex-col items-center pt-20 p-6 min-h-screen relative z-0">
             <!-- Fundo preto simulando o design do Figma -->
-            <div class="absolute top-0 left-0 w-full h-[360px] bg-figma-dark -z-10 rounded-b-[40px] sm:rounded-b-[0px]"></div>
+            <div class="absolute top-0 left-0 w-full h-[360px] bg-figma-dark dark:bg-dm-deep -z-10 rounded-b-[40px] sm:rounded-b-[0px]"></div>
+
+            <!-- Botão Dark Mode na tela de login -->
+            <button id="btn-darkmode-login" class="absolute top-6 right-6 w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all z-50" title="Alternar tema">
+                <i data-lucide="moon" class="w-5 h-5 dark-icon-moon"></i>
+                <i data-lucide="sun" class="w-5 h-5 dark-icon-sun hidden"></i>
+            </button>
 
             <div class="w-full max-w-md flex flex-col gap-8">
                 <!-- Header da página de Login -->
@@ -62,36 +77,36 @@
                 </div>
 
                 <!-- Formulário de Login -->
-                <form id="form-login" class="flex flex-col gap-4 bg-figma-gray p-8 rounded-[24px] border border-figma-border shadow-sm">
-                    <h3 class="text-xl font-bold text-figma-dark mb-2">Entrar</h3>
-                    <input type="email" id="login-email" placeholder="Endereço de e-mail" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border bg-figma-gray outline-none focus:border-figma-dark text-sm font-medium">
+                <form id="form-login" class="flex flex-col gap-4 bg-figma-gray dark:bg-dm-surface p-8 rounded-[24px] border border-figma-border dark:border-dm-border shadow-sm">
+                    <h3 class="text-xl font-bold text-figma-dark dark:text-dm-text mb-2">Entrar</h3>
+                    <input type="email" id="login-email" placeholder="Endereço de e-mail" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border dark:border-dm-border bg-figma-gray dark:bg-dm-bg outline-none focus:border-figma-dark dark:focus:border-figma-accent text-sm font-medium dark:text-dm-text dark:placeholder:text-dm-muted">
                     
                     <div class="relative">
-                        <input type="password" id="login-senha" placeholder="Senha" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border bg-figma-gray outline-none focus:border-figma-dark pr-12 text-sm font-medium">
-                        <button type="button" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-figma-dark" onclick="toggleSenha('login-senha')">
+                        <input type="password" id="login-senha" placeholder="Senha" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border dark:border-dm-border bg-figma-gray dark:bg-dm-bg outline-none focus:border-figma-dark dark:focus:border-figma-accent pr-12 text-sm font-medium dark:text-dm-text dark:placeholder:text-dm-muted">
+                        <button type="button" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-figma-dark dark:hover:text-figma-accent" onclick="toggleSenha('login-senha')">
                             <i data-lucide="eye" class="w-5 h-5"></i>
                         </button>
                     </div>
                     
-                    <button type="submit" class="mt-2 w-full py-4 bg-figma-dark text-white rounded-figma-full font-bold flex justify-center items-center gap-2 hover:bg-opacity-90 transition-all text-[15px]">
+                    <button type="submit" class="mt-2 w-full py-4 bg-figma-dark dark:bg-figma-accent text-white dark:text-figma-dark rounded-figma-full font-bold flex justify-center items-center gap-2 hover:bg-opacity-90 dark:hover:bg-opacity-90 transition-all text-[15px]">
                         <i data-lucide="log-in" class="w-5 h-5"></i> Entrar
                     </button>
                 </form>
 
                 <!-- Formulário de Cadastro -->
-                <form id="form-cadastro" class="flex flex-col gap-4 bg-figma-gray/50 p-8 rounded-[24px] border border-transparent">
-                    <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest text-center mb-2">Ou Crie sua Conta</h3>
-                    <input type="text" id="cadastro-nome" placeholder="Nome completo" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border bg-figma-gray outline-none focus:border-figma-dark text-sm font-medium">
-                    <input type="email" id="cadastro-email" placeholder="Endereço de e-mail" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border bg-figma-gray outline-none focus:border-figma-dark text-sm font-medium">
+                <form id="form-cadastro" class="flex flex-col gap-4 bg-figma-gray/50 dark:bg-dm-surface/50 p-8 rounded-[24px] border border-transparent">
+                    <h3 class="text-sm font-bold text-gray-400 dark:text-dm-muted uppercase tracking-widest text-center mb-2">Ou Crie sua Conta</h3>
+                    <input type="text" id="cadastro-nome" placeholder="Nome completo" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border dark:border-dm-border bg-figma-gray dark:bg-dm-bg outline-none focus:border-figma-dark dark:focus:border-figma-accent text-sm font-medium dark:text-dm-text dark:placeholder:text-dm-muted">
+                    <input type="email" id="cadastro-email" placeholder="Endereço de e-mail" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border dark:border-dm-border bg-figma-gray dark:bg-dm-bg outline-none focus:border-figma-dark dark:focus:border-figma-accent text-sm font-medium dark:text-dm-text dark:placeholder:text-dm-muted">
                     
                     <div class="relative">
-                        <input type="password" id="cadastro-senha" placeholder="Senha" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border bg-figma-gray outline-none focus:border-figma-dark pr-12 text-sm font-medium">
-                        <button type="button" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-figma-dark" onclick="toggleSenha('cadastro-senha')">
+                        <input type="password" id="cadastro-senha" placeholder="Senha" required class="w-full px-5 py-4 rounded-figma-full border border-figma-border dark:border-dm-border bg-figma-gray dark:bg-dm-bg outline-none focus:border-figma-dark dark:focus:border-figma-accent pr-12 text-sm font-medium dark:text-dm-text dark:placeholder:text-dm-muted">
+                        <button type="button" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-figma-dark dark:hover:text-figma-accent" onclick="toggleSenha('cadastro-senha')">
                             <i data-lucide="eye" class="w-5 h-5"></i>
                         </button>
                     </div>
                     
-                    <button type="submit" class="w-full py-4 bg-transparent border-2 border-figma-dark text-figma-dark rounded-figma-full font-bold flex justify-center items-center gap-2 hover:bg-figma-dark hover:text-white transition-all text-[15px]">
+                    <button type="submit" class="w-full py-4 bg-transparent border-2 border-figma-dark dark:border-figma-accent text-figma-dark dark:text-figma-accent rounded-figma-full font-bold flex justify-center items-center gap-2 hover:bg-figma-dark hover:text-white dark:hover:bg-figma-accent dark:hover:text-figma-dark transition-all text-[15px]">
                         <i data-lucide="user-plus" class="w-5 h-5"></i> Cadastrar
                     </button>
                 </form>
@@ -103,35 +118,49 @@
         <!-- ========================================== -->
         <section id="tasks-section" class="hidden flex-col w-full min-h-screen pb-12 relative z-0">
             <!-- Fundo preto simulando o design do Figma -->
-            <div class="absolute top-0 left-0 w-full h-[360px] bg-figma-dark -z-10 rounded-b-[40px] sm:rounded-b-[0px]"></div>
+            <div class="absolute top-0 left-0 w-full h-[360px] bg-figma-dark dark:bg-dm-deep -z-10 rounded-b-[40px] sm:rounded-b-[0px]"></div>
             
             <!-- HEADER DA PÁGINA FIXO NO TOPO PARA DESKTOP/MOBILE -->
-            <header class="w-full bg-figma-dark/90 backdrop-blur-md sticky top-0 z-40 shadow-sm border-b border-white/10">
+            <header class="w-full bg-figma-dark/90 dark:bg-dm-deep/90 backdrop-blur-md sticky top-0 z-40 shadow-sm border-b border-white/10">
                 <div class="container mx-auto max-w-7xl px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-8">
                     
-                    <!-- Saudação e Botão Sair Mobile -->
+                    <!-- Saudação e Botões Mobile -->
                     <div class="flex justify-between items-center w-full sm:w-auto">
                         <div>
                             <h1 class="text-xl sm:text-2xl font-bold text-gray-400 leading-none mb-1">Olá,</h1>
                             <h2 class="text-2xl sm:text-3xl font-bold text-white leading-none" id="user-greeting">Carregando...</h2>
                         </div>
-                        <button id="btn-sair" class="sm:hidden w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors shadow-sm" title="Sair">
-                            <i data-lucide="log-out" class="w-5 h-5"></i>
-                        </button>
+                        <div class="flex items-center gap-2 sm:hidden">
+                            <!-- Dark Mode Mobile -->
+                            <button id="btn-darkmode-tasks" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all shadow-sm" title="Alternar tema">
+                                <i data-lucide="moon" class="w-5 h-5 dark-icon-moon"></i>
+                                <i data-lucide="sun" class="w-5 h-5 dark-icon-sun hidden"></i>
+                            </button>
+                            <!-- Sair Mobile -->
+                            <button id="btn-sair" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors shadow-sm" title="Sair">
+                                <i data-lucide="log-out" class="w-5 h-5"></i>
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Barra de Pesquisa -->
                     <div class="search-row relative w-full sm:flex-1 sm:max-w-md">
-                        <input type="text" id="input-pesquisa" placeholder="Buscar tarefa..." class="w-full px-5 py-3 pl-[46px] rounded-figma-full border border-transparent bg-white outline-none focus:ring-2 focus:ring-figma-accent font-medium text-[16px] placeholder:text-gray-400 shadow-sm transition-all">
-                        <button id="btn-pesquisar" class="absolute left-[16px] top-1/2 -translate-y-1/2 text-gray-400 hover:text-figma-dark transition-colors">
+                        <input type="text" id="input-pesquisa" placeholder="Buscar tarefa..." class="w-full px-5 py-3 pl-[46px] rounded-figma-full border border-transparent bg-white dark:bg-dm-surface outline-none focus:ring-2 focus:ring-figma-accent font-medium text-[16px] placeholder:text-gray-400 dark:placeholder:text-dm-muted dark:text-dm-text shadow-sm transition-all">
+                        <button id="btn-pesquisar" class="absolute left-[16px] top-1/2 -translate-y-1/2 text-gray-400 hover:text-figma-dark dark:hover:text-figma-accent transition-colors">
                             <i data-lucide="search" class="w-5 h-5"></i>
                         </button>
                     </div>
 
-                    <!-- Botão Sair Desktop -->
-                    <button class="hidden sm:flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors shadow-sm font-bold whitespace-nowrap" title="Sair" onclick="document.getElementById('btn-sair').click()">
-                        <i data-lucide="log-out" class="w-5 h-5"></i> Sair
-                    </button>
+                    <!-- Botões Desktop: Dark Mode + Sair -->
+                    <div class="hidden sm:flex items-center gap-3">
+                        <button id="btn-darkmode-tasks-desktop" class="w-11 h-11 flex items-center justify-center rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-all shadow-sm" title="Alternar tema">
+                            <i data-lucide="moon" class="w-5 h-5 dark-icon-moon"></i>
+                            <i data-lucide="sun" class="w-5 h-5 dark-icon-sun hidden"></i>
+                        </button>
+                        <button class="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 text-white border border-white/20 hover:bg-white/20 transition-colors shadow-sm font-bold whitespace-nowrap" title="Sair" onclick="document.getElementById('btn-sair').click()">
+                            <i data-lucide="log-out" class="w-5 h-5"></i> Sair
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -140,14 +169,14 @@
                 
                 <!-- COLUNA ESQUERDA: Formulário para Adicionar -->
                 <div class="w-full lg:w-[350px] lg:sticky lg:top-28 lg:shrink-0">
-                    <form id="form-tarefa" class="flex flex-col gap-4 bg-white p-6 rounded-[24px] border border-figma-border shadow-sm">
+                    <form id="form-tarefa" class="flex flex-col gap-4 bg-white dark:bg-dm-surface p-6 rounded-[24px] border border-figma-border dark:border-dm-border shadow-sm">
                         <div class="flex items-center gap-2 mb-2 px-1">
-                            <i data-lucide="plus-circle" class="w-5 h-5 text-figma-dark"></i>
-                            <h3 class="text-[16px] font-bold text-figma-dark uppercase tracking-wider">Nova Tarefa</h3>
+                            <i data-lucide="plus-circle" class="w-5 h-5 text-figma-dark dark:text-figma-accent"></i>
+                            <h3 class="text-[16px] font-bold text-figma-dark dark:text-figma-accent uppercase tracking-wider">Nova Tarefa</h3>
                         </div>
-                        <input type="text" id="tarefa-titulo" placeholder="Título da tarefa..." required class="w-full px-4 py-3.5 rounded-xl border border-transparent bg-figma-bg outline-none focus:border-figma-border focus:bg-white font-semibold text-[16px] transition-all">
-                        <textarea id="tarefa-descricao" placeholder="Descrição da tarefa..." required rows="3" class="w-full px-4 py-3.5 rounded-xl border border-transparent bg-figma-bg outline-none focus:border-figma-border focus:bg-white resize-none text-[15px] transition-all"></textarea>
-                        <button type="submit" class="w-full py-4 mt-2 bg-figma-dark text-white rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-opacity-90 transition-all text-[16px]">
+                        <input type="text" id="tarefa-titulo" placeholder="Título da tarefa..." required class="w-full px-4 py-3.5 rounded-xl border border-transparent bg-figma-bg dark:bg-dm-bg outline-none focus:border-figma-border dark:focus:border-dm-border focus:bg-white dark:focus:bg-dm-surface font-semibold text-[16px] transition-all dark:text-dm-text dark:placeholder:text-dm-muted">
+                        <textarea id="tarefa-descricao" placeholder="Descrição da tarefa..." required rows="3" class="w-full px-4 py-3.5 rounded-xl border border-transparent bg-figma-bg dark:bg-dm-bg outline-none focus:border-figma-border dark:focus:border-dm-border focus:bg-white dark:focus:bg-dm-surface resize-none text-[15px] transition-all dark:text-dm-text dark:placeholder:text-dm-muted"></textarea>
+                        <button type="submit" class="w-full py-4 mt-2 bg-figma-dark dark:bg-figma-accent text-white dark:text-figma-dark rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-opacity-90 dark:hover:bg-opacity-90 transition-all text-[16px]">
                             <i data-lucide="plus" class="w-5 h-5"></i> Adicionar
                         </button>
                     </form>
