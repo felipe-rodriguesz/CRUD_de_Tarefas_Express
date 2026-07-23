@@ -98,5 +98,5 @@ export async function login(email, senha){
         "minha_chave_super_secreta",
         { expiresIn: "1h" }
     );
-    return { sucesso: true, token: token };
+    return { sucesso: true, token: token, nome: usuario.nome };
 }
