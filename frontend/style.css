@@ -9,7 +9,14 @@
   como personalização de scrollbars, pseudo-elementos complexos, etc.
 */
 
-/* Transição suave ao alternar temas */
+/* 
+   Declara explicitamente o esquema de cores para
+   impedir navegadores mobile de forçar dark mode
+*/
+:root {
+    color-scheme: light;
+}
+
 html.dark {
     color-scheme: dark;
 }
