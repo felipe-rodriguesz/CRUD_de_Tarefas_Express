@@ -3,8 +3,8 @@ import { app } from '../src/app.js';
 import { db, createTable } from '../src/database.js';
 import { jest } from '@jest/globals';
 
-let tokenBot = "";
-let tokenHacker = "";
+let cookieBot = [];
+let cookieHacker = [];
 
 jest.setTimeout(30000);
 
@@ -14,27 +14,28 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
         await createTable();
         await db.query(`TRUNCATE TABLE tarefas, usuarios RESTART IDENTITY CASCADE`);
 
-        await request(app).post('/usuarios/cadastro').send({
+        const cadastroBot = await request(app).post('/usuarios/cadastro').send({
             nome: "Bot de Testes",
             email: "robo@robo.com",
-            senha: "123"
+            senha: "123456"
         });
+        
         const respostaLogin = await request(app).post('/usuarios/login').send({
             email: "robo@robo.com",
-            senha: "123"
+            senha: "123456"
         });
-        tokenBot = respostaLogin.body.token;
+        cookieBot = respostaLogin.headers['set-cookie'];
 
         await request(app).post('/usuarios/cadastro').send({
             nome: "Bot Hacker",
             email: "hacker@robo.com",
-            senha: "123"
+            senha: "123456"
         });
         const respostaHacker = await request(app).post('/usuarios/login').send({
             email: "hacker@robo.com",
-            senha: "123"
+            senha: "123456"
         });
-        tokenHacker = respostaHacker.body.token;
+        cookieHacker = respostaHacker.headers['set-cookie'];
     });
 
     afterAll(async () => {
@@ -44,7 +45,7 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     it('Deve criar uma tarefa nova com sucesso (Usuário A)', async () => {
         const resposta = await request(app)
             .post('/tasks')
-            .set("Authorization", `Bearer ${tokenBot}`)
+            .set("Cookie", cookieBot)
             .send({
                 titulo: 'Estudar Testes',
                 descricao: 'Aprender Jest e Supertest'
@@ -57,7 +58,7 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     it('Deve listar a tarefa recém-criada (Usuário A)', async () => {
         const resposta = await request(app)
             .get('/tasks')
-            .set("Authorization", `Bearer ${tokenBot}`)
+            .set("Cookie", cookieBot)
 
         expect(resposta.status).toBe(200);
         expect(resposta.body.data.length).toBe(1);
@@ -67,7 +68,7 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     it('ISOLAMENTO: Usuário B não deve ver as tarefas do Usuário A', async () => {
         const resposta = await request(app)
             .get('/tasks')
-            .set("Authorization", `Bearer ${tokenHacker}`)
+            .set("Cookie", cookieHacker)
 
         expect(resposta.status).toBe(200);
         expect(resposta.body.data.length).toBe(0);
@@ -76,7 +77,7 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     it('Deve atualizar o titulo da tarefa via PUT', async () => {
         const resposta = await request(app)
             .put('/tasks/1')
-            .set("Authorization", `Bearer ${tokenBot}`)
+            .set("Cookie", cookieBot)
             .send({
                 titulo: 'Estudar Testes Avançados',
                 descricao: 'Aprender Jest'
@@ -89,7 +90,7 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     it('ISOLAMENTO: Usuário B não pode deletar a tarefa do Usuário A', async () => {
         const resposta = await request(app)
             .delete('/tasks/1')
-            .set("Authorization", `Bearer ${tokenHacker}`)
+            .set("Cookie", cookieHacker)
 
         expect(resposta.status).toBe(404);
         expect(resposta.body).toBe("Não encontrado");
@@ -98,7 +99,7 @@ describe('CRUD de Tarefas - Testes Automatizados (Postgres)', () => {
     it('Deve deletar a tarefa existente (Pelo dono correto)', async () => {
         const resposta = await request(app)
             .delete('/tasks/1')
-            .set("Authorization", `Bearer ${tokenBot}`)
+            .set("Cookie", cookieBot)
 
         expect(resposta.status).toBe(200);
         expect(resposta.body).toBe("Deletado com sucesso!");

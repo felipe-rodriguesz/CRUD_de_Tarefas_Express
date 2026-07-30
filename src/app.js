@@ -95,6 +95,7 @@ const globalLimiter = rateLimit({
     message: { sucesso: false, mensagem: 'Muitas requisições. Tente novamente mais tarde.' },
     standardHeaders: true,
     legacyHeaders: false,
+    skip: (req, res) => process.env.NODE_ENV === 'test'
 });
 app.use(globalLimiter);
 

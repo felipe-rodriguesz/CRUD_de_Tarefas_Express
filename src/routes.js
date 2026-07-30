@@ -9,7 +9,8 @@ const authLimiter = rateLimit({
     max: 15, // Máximo 15 tentativas por IP
     message: { sucesso: false, mensagem: "Muitas tentativas. Aguarde 15 minutos e tente novamente." },
     standardHeaders: true,
-    legacyHeaders: false
+    legacyHeaders: false,
+    skip: (req, res) => process.env.NODE_ENV === 'test'
 });
 
 export const rotas = Router();
