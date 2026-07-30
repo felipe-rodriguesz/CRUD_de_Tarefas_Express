@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { rotas } from "./routes.js";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Configuração necessária para usar __dirname no ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -40,8 +43,39 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 const app = express();
-app.use(cors()); // Permite que qualquer Frontend converse com a API
-app.use(express.json());
+
+// ==========================================
+// SEGURANÇA: Headers HTTP (Helmet)
+// ==========================================
+app.use(helmet({
+    contentSecurityPolicy: false // Desabilita CSP para não bloquear Tailwind CDN e Lucide CDN
+}));
+
+// ==========================================
+// SEGURANÇA: CORS restrito a origens autorizadas
+// ==========================================
+const allowedOrigins = [
+    process.env.FRONTEND_URL || 'http://localhost:3000',
+    'https://crud-de-tarefas-express.onrender.com'
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Permite requisições sem origin (Postman, Insomnia, etc.)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Bloqueado pelo CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// ==========================================
+// SEGURANÇA: Limite de tamanho do body (anti JSON Bomb)
+// ==========================================
+app.use(express.json({ limit: '10kb' }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
@@ -50,5 +84,13 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 app.use(rotas);
+
+// ==========================================
+// SEGURANÇA: Error Handler Global
+// ==========================================
+app.use((err, req, res, next) => {
+    console.error('Erro não tratado:', err.message);
+    res.status(500).json({ sucesso: false, mensagem: 'Erro interno do servidor.' });
+});
 
 export { app };

@@ -279,7 +279,23 @@ function mostrarModalEditar(tituloAtual, descricaoAtual) {
 
 
 // ==========================================
-// 1.5 TOGGLE DE VISIBILIDADE DE SENHA
+// 1.5 SANITIZAÇÃO ANTI-XSS
+// ==========================================
+
+/**
+ * Escapa caracteres HTML perigosos para prevenir XSS.
+ * Converte <, >, &, ", ' em entidades HTML seguras.
+ */
+function escapeHTML(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+
+// ==========================================
+// 1.6 TOGGLE DE VISIBILIDADE DE SENHA
 // ==========================================
 
 function toggleSenha(inputId) {
@@ -512,7 +528,9 @@ async function carregarTarefas(textoBusca = "") {
                 
                 li.className = `${bgClass} rounded-figma-card p-6 relative overflow-hidden group shadow-sm transition-transform hover:-translate-y-1`;
 
-                // Escapamos aspas simples nos dados para evitar quebrar os atributos onclick
+                // Sanitizamos os dados para prevenir XSS
+                const tituloSeguro = escapeHTML(tarefa.titulo);
+                const descricaoSegura = escapeHTML(tarefa.descricao);
                 const tituloEscapado = tarefa.titulo.replace(/'/g, "\\'").replace(/"/g, "&quot;");
                 const descricaoEscapada = tarefa.descricao.replace(/'/g, "\\'").replace(/"/g, "&quot;");
 
@@ -523,8 +541,8 @@ async function carregarTarefas(textoBusca = "") {
 
                 li.innerHTML = `
                     <div class="relative z-10">
-                        <h4 class="text-[22px] font-bold ${textColor} leading-tight mb-2 ${isConcluido ? 'line-through' : ''}">${tarefa.titulo}</h4>
-                        <p class="text-[16px] ${textColor} font-medium mb-8 opacity-80 ${isConcluido ? 'line-through' : ''}">${tarefa.descricao}</p>
+                        <h4 class="text-[22px] font-bold ${textColor} leading-tight mb-2 ${isConcluido ? 'line-through' : ''}">${tituloSeguro}</h4>
+                        <p class="text-[16px] ${textColor} font-medium mb-8 opacity-80 ${isConcluido ? 'line-through' : ''}">${descricaoSegura}</p>
                         
                         <div class="flex items-center gap-3">
                             <button onclick="toggleTarefa(${tarefa.id}, '${tarefa.status}')" class="${btnActionClass} px-5 py-2.5 rounded-full font-medium text-[14px] flex items-center gap-2 hover:bg-opacity-90 transition-colors shadow-sm">

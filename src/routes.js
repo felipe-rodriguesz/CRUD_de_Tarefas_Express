@@ -1,6 +1,16 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { createTask, listTasks, updateTask, deleteTask, createUser, login } from './funcoes.js';
 import { verificarToken } from './middleware.js';
+
+// Rate limiter para rotas de autenticação (anti brute-force)
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 15, // Máximo 15 tentativas por IP
+    message: { sucesso: false, mensagem: "Muitas tentativas. Aguarde 15 minutos e tente novamente." },
+    standardHeaders: true,
+    legacyHeaders: false
+});
 
 export const rotas = Router();
 rotas.use('/tasks', verificarToken);
@@ -73,7 +83,7 @@ rotas.post('/tasks', async(req, res) => {
 rotas.get('/tasks', async(req, res) => {
     const pesquisa = req.query.search;
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100); // Clamp entre 1 e 100
     const usuarioId = req.usuarioId;
     const tarefas = await listTasks(pesquisa, page, limit, usuarioId);
             
@@ -207,14 +217,30 @@ rotas.patch('/tasks/:id/complete', async(req, res) => {
  *       400:
  *         description: Erro de validação ou email já existe
  */
-rotas.post('/usuarios/cadastro', async (req, res) => {
+rotas.post('/usuarios/cadastro', authLimiter, async (req, res) => {
     const { nome, email, senha } = req.body;
     
     if (!nome || !email || !senha) {
         return res.status(400).json({ sucesso: false, mensagem: "Preencha nome, email e senha." });
     }
 
-    const resultado = await createUser(nome, email, senha);
+    // Validação de formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ sucesso: false, mensagem: "Formato de email inválido." });
+    }
+
+    // Validação de tamanho do nome
+    if (nome.trim().length < 2 || nome.trim().length > 100) {
+        return res.status(400).json({ sucesso: false, mensagem: "Nome deve ter entre 2 e 100 caracteres." });
+    }
+
+    // Validação de senha forte
+    if (senha.length < 6) {
+        return res.status(400).json({ sucesso: false, mensagem: "Senha deve ter no mínimo 6 caracteres." });
+    }
+
+    const resultado = await createUser(nome.trim(), email.trim().toLowerCase(), senha);
     
     if (resultado.sucesso) {
         return res.status(201).json(resultado);
@@ -246,14 +272,14 @@ rotas.post('/usuarios/cadastro', async (req, res) => {
  *       401:
  *         description: Senha incorreta ou usuário não encontrado
  */
-rotas.post('/usuarios/login', async (req, res) => {
+rotas.post('/usuarios/login', authLimiter, async (req, res) => {
     const { email, senha } = req.body;
 
     if (!email || !senha) {
         return res.status(400).json({ sucesso: false, mensagem: "Preencha email e senha." });
     }
 
-    const resultado = await login(email, senha);
+    const resultado = await login(email.trim().toLowerCase(), senha);
 
     if (resultado.sucesso) {
         return res.status(200).json(resultado); 

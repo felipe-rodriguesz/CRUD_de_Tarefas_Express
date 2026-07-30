@@ -1,6 +1,8 @@
 import { db } from './database.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export async function createTask(titulo, descricao, usuario_id) {
     const query = `INSERT INTO tarefas (titulo, descricao, usuario_id) VALUES ($1, $2, $3)`;
@@ -95,7 +97,7 @@ export async function login(email, senha){
     
     const token = jwt.sign(
         { id: usuario.id, nome: usuario.nome }, 
-        "minha_chave_super_secreta",
+        process.env.JWT_SECRET,
         { expiresIn: "1h" }
     );
     return { sucesso: true, token: token, nome: usuario.nome };

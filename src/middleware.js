@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export function verificarToken(req, res, next) {
     const authHeader = req.headers.authorization;
@@ -10,7 +12,7 @@ export function verificarToken(req, res, next) {
     const token = authHeader.split(' ')[1];
 
     try {
-        const payload = jwt.verify(token, "minha_chave_super_secreta");
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
         req.usuarioId = payload.id;
         next();
     } catch (error) {
