@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { rotas } from "./routes.js";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsDoc from 'swagger-jsdoc';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -84,6 +85,18 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Faz o Express servir nossa pasta 'frontend' como um site público!
 // Ao acessar a URL base, ele vai carregar automaticamente o index.html
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+// ==========================================
+// SEGURANÇA: Rate Limit Global
+// ==========================================
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 200, // máximo 200 requests por IP a cada 15 min
+    message: { sucesso: false, mensagem: 'Muitas requisições. Tente novamente mais tarde.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+app.use(globalLimiter);
 
 app.use(rotas);
 
