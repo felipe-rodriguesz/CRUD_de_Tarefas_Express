@@ -7,6 +7,7 @@ import swaggerJsDoc from 'swagger-jsdoc';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 // Configuração necessária para usar __dirname no ES Modules
@@ -29,10 +30,10 @@ const swaggerOptions = {
         ],
         components: {
             securitySchemes: {
-                bearerAuth: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    bearerFormat: 'JWT',
+                cookieAuth: {
+                    type: 'apiKey',
+                    in: 'cookie',
+                    name: 'auth_token',
                 }
             }
         }
@@ -43,6 +44,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 const app = express();
+app.use(cookieParser());
 
 // ==========================================
 // SEGURANÇA: Headers HTTP (Helmet)

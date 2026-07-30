@@ -374,12 +374,8 @@ formLogin.addEventListener("submit", async function (evento) {
 
         // 4. Recebemos a resposta do servidor
         if (resposta.ok) {
-            // A senha estava certa! O Node.js nos devolveu o Token JWT
+            // O Node.js agora enviou o Token JWT como um cookie HttpOnly!
             const dados = await resposta.json();
-            const nossoCrachaJwt = dados.token;
-
-            // Guardamos o crachá no cofre do navegador (localStorage)
-            localStorage.setItem("tokenTarefas", nossoCrachaJwt);
             
             // Salvamos o nome do usuário para exibir na tela!
             if (dados.nome) {
@@ -444,9 +440,14 @@ formCadastro.addEventListener("submit", async function (evento) {
 });
 
 // Quando o usuário apertar "Sair da Conta"
-btnSair.addEventListener("click", function() {
-    // Apaga o token do cofre do navegador
-    localStorage.removeItem("tokenTarefas");
+btnSair.addEventListener("click", async function() {
+    try {
+        await fetch("/usuarios/logout", { method: "POST" });
+    } catch (e) {
+        console.error("Erro ao fazer logout:", e);
+    }
+    
+    // Apaga apenas o nome do usuário
     localStorage.removeItem("nomeUsuario");
     
     // Mostra o formulário de login novamente
@@ -460,9 +461,6 @@ btnSair.addEventListener("click", function() {
 // ==========================================
 
 async function carregarTarefas(textoBusca = "") {
-    // 1. Pegamos o crachá que estava guardado no cofre
-    const token = localStorage.getItem("tokenTarefas");
-
     // Montamos a URL: se houver texto de busca, adicionamos como parâmetro
     const url = textoBusca
         ? `/tasks?search=${encodeURIComponent(textoBusca)}`
@@ -478,13 +476,9 @@ async function carregarTarefas(textoBusca = "") {
     mostrarSkeleton();
 
     try {
-        // 2. Fazemos o pedido GET enviando o token e a URL (com ou sem busca)
+        // 2. Fazemos o pedido GET. O browser envia o cookie automaticamente!
         const resposta = await fetch(url, {
-            method: "GET",
-            headers: {
-                // Aqui enviamos o token JWT no cabeçalho (O segurança barra sem isso!)
-                "Authorization": `Bearer ${token}` 
-            }
+            method: "GET"
         });
 
         if (resposta.ok) {
@@ -597,14 +591,12 @@ formTarefa.addEventListener("submit", async function (evento) {
 
     const titulo = tarefaTitulo.value;
     const descricao = tarefaDescricao.value;
-    const token = localStorage.getItem("tokenTarefas");
 
     try {
         const resposta = await fetch("/tasks", {
             method: "POST", // POST significa "Criar/Salvar"
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` // Crachá necessário!
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ titulo: titulo, descricao: descricao })
         });
@@ -642,14 +634,9 @@ window.excluirTarefa = async function(id) {
     );
     if (!confirmar) return;
 
-    const token = localStorage.getItem("tokenTarefas");
-
     try {
         const resposta = await fetch(`/tasks/${id}`, {
-            method: "DELETE", // Comando de Destruição
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            method: "DELETE" // Comando de Destruição
         });
 
         if (resposta.ok) {
@@ -666,8 +653,6 @@ window.excluirTarefa = async function(id) {
 
 // Função global para ALTERNAR o status da tarefa (concluir ou desmarcar)
 window.toggleTarefa = async function(id, statusAtual) {
-    const token = localStorage.getItem("tokenTarefas");
-
     try {
         let resposta;
 
@@ -676,18 +661,14 @@ window.toggleTarefa = async function(id, statusAtual) {
             resposta = await fetch(`/tasks/${id}`, {
                 method: "PUT",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ status: "pendente" })
             });
         } else {
             // Tarefa está pendente: vamos CONCLUIR via PATCH
             resposta = await fetch(`/tasks/${id}/complete`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                method: "PATCH"
             });
         }
 
@@ -728,14 +709,11 @@ window.editarTarefa = async function(id, tituloAtual, descricaoAtual) {
     const resultado = await mostrarModalEditar(tituloAtual, descricaoAtual);
     if (!resultado) return; // Se o usuário cancelou, não fazemos nada
 
-    const token = localStorage.getItem("tokenTarefas");
-
     try {
         const resposta = await fetch(`/tasks/${id}`, {
             method: "PUT", // PUT = Atualizar o recurso completo
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({ titulo: resultado.titulo, descricao: resultado.descricao })
         });
@@ -755,3 +733,23 @@ window.editarTarefa = async function(id, tituloAtual, descricaoAtual) {
 
 // Inicializa os ícones do Lucide que já estão estáticos no HTML
 lucide.createIcons();
+
+// ==========================================
+// 9. VERIFICAÇÃO DE SESSÃO AUTOMÁTICA
+// ==========================================
+// Tenta carregar as tarefas ao abrir a página para ver se o cookie ainda é válido
+window.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const resposta = await fetch("/tasks");
+        if (resposta.ok) {
+            // Se o servidor aceitou, o cookie é válido!
+            alternarTelas(true);
+            carregarTarefas();
+        } else {
+            // Se falhou (401), não tem cookie ou expirou. Mostra o login.
+            alternarTelas(false);
+        }
+    } catch (e) {
+        console.error("Erro ao verificar sessão:", e);
+    }
+});

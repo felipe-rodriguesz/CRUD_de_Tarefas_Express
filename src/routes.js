@@ -282,8 +282,36 @@ rotas.post('/usuarios/login', authLimiter, async (req, res) => {
     const resultado = await login(email.trim().toLowerCase(), senha);
 
     if (resultado.sucesso) {
-        return res.status(200).json(resultado); 
+        // Envia o token como cookie HttpOnly
+        res.cookie('auth_token', resultado.token, {
+            httpOnly: true, // Javascript do browser não consegue ler
+            secure: process.env.NODE_ENV === 'production', // true em produção (HTTPS)
+            sameSite: 'Lax', // Proteção contra CSRF
+            maxAge: 60 * 60 * 1000 // 1 hora
+        });
+        
+        // Retorna apenas nome e sucesso, não o token
+        return res.status(200).json({ sucesso: true, nome: resultado.nome }); 
     } else {
         return res.status(401).json(resultado);
     }
+});
+
+/**
+ * @swagger
+ * /usuarios/logout:
+ *   post:
+ *     summary: Faz logout limpando o cookie
+ *     tags: [Usuários]
+ *     responses:
+ *       200:
+ *         description: Logout bem-sucedido
+ */
+rotas.post('/usuarios/logout', (req, res) => {
+    res.clearCookie('auth_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Lax'
+    });
+    return res.status(200).json({ sucesso: true, mensagem: 'Logout realizado.' });
 });
