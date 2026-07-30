@@ -19,7 +19,8 @@ export async function createTable() {
             nome TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
             senha TEXT NOT NULL
-        )
+        );
+        ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
     `);
 
     await db.query(`
@@ -30,8 +31,9 @@ export async function createTable() {
             status TEXT DEFAULT 'PENDENTE',
             usuario_id INTEGER NOT NULL,
             FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-        )
+        );
+        ALTER TABLE tarefas ENABLE ROW LEVEL SECURITY;
     `);
 
-    console.log("Tabelas verificadas/criadas no Supabase com sucesso!");
+    console.log("Tabelas verificadas/criadas no Supabase com sucesso e RLS ativado!");
 }
