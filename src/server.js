@@ -1,5 +1,7 @@
 import { app } from "./app.js";
 
-app.listen(3000, () => {
-    console.log("Servidor rodando! Acesse: http://localhost:3000/tasks no seu navegador.");
+const port = Number(process.env.PORT) || 3000;
+
+app.listen(port, () => {
+    console.log(`Servidor rodando! Acesse: http://localhost:${port} no seu navegador.`);
 });

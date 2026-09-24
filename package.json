@@ -1,14 +1,17 @@
 {
   "name": "crud_de_tarefas",
   "version": "1.0.0",
-  "description": "",
-  "main": "exemplo.js",
+  "description": "Aplicação web e API REST para gerenciamento de tarefas com autenticação de usuários.",
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-  "keywords": [],
+  "keywords": [
+    "tarefas",
+    "express",
+    "postgresql"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
