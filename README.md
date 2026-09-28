@@ -2,6 +2,16 @@
 
 Aplicação web de gerenciamento de tarefas com contas de usuário. Cada pessoa pode criar uma conta, entrar e administrar as próprias tarefas pela interface ou pela API.
 
+## Interface
+
+Painel de tarefas em desktop, com exemplos criados em um banco local de demonstração:
+
+![Painel do gerenciador de tarefas no desktop](docs/screenshots/dashboard-desktop.png)
+
+Visualização em dispositivo móvel:
+
+<img src="docs/screenshots/dashboard-mobile.png" alt="Painel do gerenciador de tarefas no celular" width="320">
+
 ## Funcionalidades
 
 - Cadastro e login com e-mail e senha.
